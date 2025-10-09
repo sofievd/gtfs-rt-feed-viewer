@@ -14,47 +14,61 @@
       <div
           v-for="(entity, i) in feed.entity"
           :key="i"
-      >
-        <p >Entity ID: {{ entity.id }}</p>
+        >
+        <p>Entity ID: {{ entity.id || "(no id)" }}</p>
 
-        <div v-if="entity.tripUpdate">
-          <p>TripUpdate</p>
-          <p>Trip ID: {{ entity.tripUpdate.trip?.tripId }}</p>
-          <ul>
-            <li
-                v-for="(st, j) in entity.tripUpdate.stopTimeUpdate"
-                :key="j"
-            >
-              Stop Seq: {{ st.stopSequence }},
-              Arrival: {{ st.arrival?.time ? new Date(st.arrival.time * 1000).toLocaleTimeString() : '—' }}
-            </li>
-          </ul>
-        </div>
-
-        <div v-if="entity.vehicle" class="border border-gray-600 p-2 mb-2">
-          <p>VehiclePosition</p>
-          <div v-for="(value, key) in entity.vehicle" :key="key">
-            <p>
-              <span> {{key}} :</span>
-              <span> {{value}} </span>
-
-            </p>
-
+        <template v-for="(value , key) in entity" :key="key" >
+          <div v-if="key !== entity.id">
+            <span> {{key}}</span>
+            <template v-if="isObject(value)">
+              <div>
+                <template v-for="(subValue, subKey) in value" :key="subKey" >
+                  <span class="font-semibold">{{ subKey }}:</span>
+                  <template v-if="isObject(subValue)">
+                    <div class="ml-4">
+                      <template v-for="(innerValue, innerKey) in subValue" :key="innerKey">
+                        <div>
+                          <span class="font-semibold">{{ innerKey }}:</span> {{ innerValue }}
+                        </div>
+                      </template>
+                    </div>
+                  </template>
+                  <template v-else>
+                    {{ subValue }}
+                  </template>
+                </template>
+              </div>
+            </template>
           </div>
-        </div>
 
-        <div v-if="entity.alert">
-          <p>Alert</p>
-          <p>
-            {{ entity.alert.headerText?.translation?.[0]?.text ||
-          entity.alert.descriptionText?.translation?.[0]?.text ||
-          'No text' }}
-          </p>
-        </div>
+        </template>
+
+<!--        <div v-if="entity.vehicle" class="border border-gray-600 p-2 mb-2">
+          <p class="font-bold">VehiclePosition</p>
+          <div class="ml-2">
+            <template v-for="(value, key) in entity.vehicle" :key="key">
+              <div>
+                <span class="font-semibold">{{ key }}:</span>
+                <template v-if="isObject(value)">
+                  <div class="ml-4">
+                    <template v-for="(subValue, subKey) in value" :key="subKey">
+                      <div>
+                        <span class="font-semibold">{{ subKey }}:</span> {{ subValue }}
+                      </div>
+                    </template>
+                  </div>
+                </template>
+                <template v-else>
+                  {{ value }}
+                </template>
+              </div>
+            </template>
+          </div>
+        </div>-->
+
       </div>
     </div>
 
-    <p>{{feed}}</p>
   </div>
 
 </template>
@@ -73,9 +87,9 @@ export default {
   methods: {
     async loadPbFile() {
 
-      try{
+      try {
         const response = await fetch("/src/assets/VehiclePositions.pb");
-        if(!response.ok) throw new Error("Failed to fetch .pb file");
+        if (!response.ok) throw new Error("Failed to fetch .pb file");
 
         const arrayBuffer = await response.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
@@ -87,10 +101,13 @@ export default {
         this.feed = decoded;
 
         console.log('Decoded message:', decoded);
-      } catch (error){
+      } catch (error) {
         console.log(error);
       }
     },
+    isObject(val) {
+      return val && typeof val === "object" && !Array.isArray(val);
+    }
 
   }
 }
