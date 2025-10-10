@@ -1,6 +1,6 @@
 <template>
 
-  <div>
+  <div class="font-sans">
     <GtfsViewer />
   </div>
 

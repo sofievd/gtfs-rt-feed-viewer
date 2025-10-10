@@ -4,18 +4,20 @@
       <!-- Toggleable key if it's expandable -->
       <div
           v-if="isExpandable(value)"
-          class="cursor-pointer select-none font-semibold text-blue-600"
+          class="cursor-pointer select-none font-bold text-xl"
           @click="toggleNode(key)"
       >
-        <FontAwesomeIcon
-        :icon="isExpanded(key) ? 'fa-chevron-down' : 'fa-chevron-right'" />
+        <span class="text-indigo-900">
+           <FontAwesomeIcon
+               :icon="isExpanded(key) ? 'fa-chevron-down' : 'fa-chevron-right'" />
+        </span>
         {{ key }}
       </div>
 
       <!-- Simple key:value if not expandable -->
       <div v-else class="ml-4">
-        <span class="font-semibold">{{ key }}:</span>
-        <span class="text-gray-700"> {{ value }}</span>
+        <span class="text-lg font-bold text-indigo-800">{{ key }}: </span>
+        <span class="text-lg text-gray-900"> {{ value }}</span>
       </div>
 
       <!-- Nested expandable content -->
