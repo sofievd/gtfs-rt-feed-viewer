@@ -9,7 +9,7 @@
       >
         <span class="text-indigo-900">
            <FontAwesomeIcon
-               :icon="isExpanded(key) ? 'fa-chevron-down' : 'fa-chevron-right'" />
+               :icon="isExpanded(key) ? 'fa-chevron-down' : 'fa-chevron-right'"/>
         </span>
         {{ key }}
       </div>
@@ -25,7 +25,7 @@
           v-if="isExpanded(key)"
           class="ml-4 border-l border-gray-300 pl-2 mt-1"
       >
-        <tree-node :data="value" />
+        <tree-node :data="value"/>
       </div>
     </div>
   </div>
@@ -39,20 +39,20 @@ export default {
   components: {FontAwesomeIcon},
   props: {
     data: {
-      type:[Object, Array, String, Number],
-      required:true
-    },
+      type: [Object, Array, String, Number],
+      required: true
+    }
   },
-  data(){
+  data() {
     return {
       expandedKeys: {},
     }
   },
-  methods:{
-    toggleNode(key){
+  methods: {
+    toggleNode(key) {
       this.expandedKeys[key] = !this.expandedKeys[key];
     },
-    isExpanded(key){
+    isExpanded(key) {
       return !!this.expandedKeys[key]
     },
     isExpandable(val) {
