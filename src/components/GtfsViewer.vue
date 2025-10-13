@@ -60,7 +60,7 @@
         </div>
 
         <div v-show="isEntityExpanded(entity.id)" class="mt-2">
-          <tree-node :data="entity"/>
+          <tree-node :data="entity" :is-root="true"/>
         </div>
 
         <hr
