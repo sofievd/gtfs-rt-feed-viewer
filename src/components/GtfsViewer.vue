@@ -2,6 +2,10 @@
     <div class="flex flex-col items-center h-screen">
       <div class="flex-1"></div>
       <h1 class="text-4xl my-8 font-semibold">Gtfs-RT Feed Viewer</h1>
+      <div class="mb-6 text-center">
+        <p> View and inspect your GTFS Realtime (.pb) data. </p>
+        <p> Upload a file from your device or provide a feed URL to see its contents instantly. </p>
+      </div>
       <FeedPicker @file-buffer="handleUint8Array"/>
       <GtfsFeed v-if="feed" :feed="feed" class="bg-gray-50 w-[800px] py-4 px-4 rounded-3xl"/>
       <div class="flex-1"></div>
