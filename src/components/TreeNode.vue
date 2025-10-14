@@ -2,7 +2,7 @@
   <div>
     <div
         v-if="isExpandable"
-        class="cursor-pointer select-none font-bold text-lg"
+        class="cursor-pointer select-none font-semibold text-lg"
         @click="toggleNode()"
     >
       <component
