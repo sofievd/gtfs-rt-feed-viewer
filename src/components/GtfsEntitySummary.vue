@@ -1,35 +1,24 @@
 <template>
   <div>
     <div v-if="entity.vehicle" class="text-gray-800">
-      <span class="font-semibold text-indigo-900 text-lg">Vehicle Position:</span>
-      <ul v-if="entity.vehicle.position">
-        <li>Trip ID: {{ entity.vehicle.trip?.tripId || 'N/A' }}</li>
-        <li>Lat: {{ entity.vehicle.position.latitude?.toFixed(5) }}, Lon:
-          {{ entity.vehicle.position.longitude?.toFixed(5) }}
-        </li>
-        <li>Speed: {{ entity.vehicle.position.speed || 'N/A' }} m/s</li>
-        <li>Bearing: {{ entity.vehicle.position.bearing || 'N/A' }}</li>
-      </ul>
-      <span v-else>No position data</span>
+      <span class="font-semibold text-indigo-900 text-lg"> Trip {{ entity.vehicle.trip?.tripId || ' ' }}
+        (  {{ entity.vehicle.position.latitude?.toFixed(5) }} lat,
+        {{ entity.vehicle.position.longitude?.toFixed(5) }} lon,
+        {{ Math.round(entity.vehicle.position.speed) }} m/s)
+      </span>
     </div>
 
     <div v-if="entity.tripUpdate" class="text-gray-800">
-      <span class="font-semibold text-indigo-900">Trip {{
-          entity.tripUpdate.trip?.tripId || ''
-        }} ({{ entity.tripUpdate.stopTimeUpdate.length }} updates, avg delay {{
-          getAverageDelay(entity) || ' '
-        }}s)</span>
+      <span class="font-semibold text-indigo-900">Trip {{ entity.tripUpdate.trip?.tripId || '' }}
+        ({{ entity.tripUpdate.stopTimeUpdate.length }} updates, avg delay {{ getAverageDelay(entity) || ' '}}s)</span>
     </div>
 
     <div v-if="entity.alert" class="text-gray-800">
-      <span class="font-semibold text-indigo-900">Service Alert:</span>
-      <ul>
-        <li> Trip ID: {{ entity.alert.tripId }}</li>
-        <li> Cause: {{ formatEnumName(getCauseName(entity.alert.cause)) }}</li>
-        <li> Effect: {{ formatEnumName(getEffectName(entity.alert.effect)) }}</li>
-        <li> Description: {{ entity.alert.headerText?.translation?.[0]?.text || 'No description' }}</li>
-        <li> Severity Level: {{ formatEnumName(getSeverityLevel(entity.alert.severityLevel)) }}</li>
-      </ul>
+      <span class="font-semibold text-indigo-900">Alert
+        ({{ formatEnumName(getCauseName(entity.alert.cause)) }},
+        {{getDate(entity.alert.activePeriod?.[0]?.start)}} - {{getDate(entity.alert.activePeriod?.[0]?.end)}},
+        {{ entity.alert.headerText?.translation?.[0]?.text || 'No description' }})
+      </span>
     </div>
   </div>
 </template>
@@ -73,7 +62,7 @@ export default {
         11: "POLICE_ACTIVITY",
         12: "MEDICAL_EMERGENCY"
       };
-      return causeMap[causeCode] || "Unknown cause";
+      return causeMap[causeCode] ;
     },
     getSeverityLevel(severityCode) {
       const severityMap = {
@@ -82,7 +71,7 @@ export default {
         3: "WARNING",
         4: "SEVERE"
       };
-      return severityMap[severityCode] || "Unknown severity";
+      return severityMap[severityCode];
     },
     getAverageDelay(entity) {
       const updates = entity.tripUpdate?.stopTimeUpdate || [];
@@ -95,6 +84,10 @@ export default {
       const avg = delays.reduce((a, b) => a + b, 0) / delays.length;
       console.log(Math.round(avg))
       return Math.round(avg);
+    },
+    getDate(time){
+      const date = new Date(time * 1000)
+      return date.toLocaleString();
     }
   }
 }
