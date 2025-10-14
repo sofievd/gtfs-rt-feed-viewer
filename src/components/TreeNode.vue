@@ -1,82 +1,92 @@
 <template>
-  <div v-if="isRoot">
-    <button @click="toggleAll(true)" class="mr-2 px-2 py-1 bg-indigo-500 text-white rounded">Expand All</button>
-    <button @click="toggleAll(false)" class="px-2 py-1 bg-gray-500 text-white rounded">Collapse All</button>
-  </div>
-  <div v-for="(value, key) in data" :key="key" class="ml-2">
-
-    <!-- Toggleable key if it's expandable -->
+  <div>
     <div
-        v-if="isExpandable(value)"
-        class="cursor-pointer select-none font-bold text-xl"
-        @click="toggleNode(key)"
+        v-if="isExpandable"
+        class="cursor-pointer select-none font-bold text-lg"
+        @click="toggleNode()"
     >
-        <span class="text-indigo-900">
-           <FontAwesomeIcon
-               :icon="isExpanded(key) ? 'fa-chevron-down' : 'fa-chevron-right'"/>
-        </span>
-      {{ key }}
+      <component
+          :is="isExpanded ? ChevronUpIcon : ChevronDownIcon"
+          class="size-6 text-indigo-900 inline stroke-[3]"
+      />
+
+      <!--<FontAwesomeIcon class="text-indigo-900 text-md"
+                        :icon="isExpanded ? 'fa-angle-up' : 'fa-angle-down'"/>-->
+
+      {{ title }}
+      <span class="float-end">
+        <a @click.stop="expand(true)"> <PlusIcon class="inline size-6 text-indigo-900 stroke-[2]" /> </a>
+      </span>
     </div>
 
-    <!-- Simple key:value if not expandable -->
-    <div v-else class="ml-4">
-      <span class="text-lg font-bold text-indigo-800">{{ key }}: </span>
-      <span class="text-lg text-gray-900"> {{ value }}</span>
-    </div>
+    <div v-if="isExpanded" v-for="(childValue, childKey) in data" :key="childKey"
+         class="ml-2.5 border-l border-gray-300 ">
+      <!-- Nested expandable content -->
+      <TreeNode v-if="isExpandable(childValue)"
+                 class="ml-4 mt-1"
+                 :title="(typeof childKey == 'string') ? childKey : childKey.toString()"
+                 :data="childValue" :level="level + 1"
+                 ref="childNodes"/>
 
-    <!-- Nested expandable content -->
-    <div
-        v-if="isExpanded(key)"
-        class="ml-4 border-l border-gray-300 pl-2 mt-1"
-    >
-      <tree-node :data="value" :is-root="false"/>
+      <!-- Simple key:value if not expandable -->
+      <div v-else class="ml-6">
+        <span class="text-lg font-semibold">{{ childKey }}: </span>
+        <span class="text-lg text-gray-900"> {{ childValue }}</span>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import {ChevronDownIcon, ChevronUpIcon, ChevronDoubleDownIcon, PlusIcon} from '@heroicons/vue/24/outline';
+import {nextTick} from "vue";
 
 export default {
   name: "TreeNode",
-  components: {FontAwesomeIcon},
+  components: {FontAwesomeIcon, ChevronDownIcon, ChevronUpIcon, ChevronDoubleDownIcon, PlusIcon},
   props: {
+    title: {
+      type: String,
+      required: true,
+    },
     data: {
       type: [Object, Array, String, Number],
       required: true
     },
-    isRoot: {
-      type: Boolean,
+    level: {
+      type: Number,
       required: true
     }
   },
   data() {
     return {
-      expandedKeys: {},
+      isExpanded: false
     }
   },
+  computed: {},
   methods: {
-    toggleNode(key) {
-      this.expandedKeys[key] = !this.expandedKeys[key];
+    ChevronUpIcon,
+    ChevronDownIcon,
+    isExpandable(value) {
+      return value && typeof value === "object";
     },
-    isExpanded(key) {
-      return !!this.expandedKeys[key]
+    toggleNode() {
+      this.isExpanded = !this.isExpanded
     },
-    isExpandable(val) {
-      return val && typeof val === "object";
-    },
-    toggleAll(expand) {
-      console.log(expand);
-      const toggleRecursive = (data) => {
-        for (const key in data) {
-          if (this.isExpandable(data[key])) {
-            this.expandedKeys[key] = expand;
-            // Recurse into nested objects
-            toggleRecursive(data[key]);
+    expand(recursive) {
+      this.isExpanded = true;
+      if (recursive) {
+        nextTick(() => {
+          if (this.$refs.childNodes) {
+            this.$refs.childNodes.forEach((node) => node.expand(true))
           }
-        }
-      };
-      toggleRecursive(this.data);
+        })
+      }
+    },
+    collapse() {
+      this.isExpanded = false;
+      // always recursive since child elements are destroyed by v-if becoming false
     }
   }
 }
