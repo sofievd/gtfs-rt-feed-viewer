@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h2 class="text-center text-xl font-bold">Feed</h2>
     <div v-for="(entity, index) in feed.entity"
          :key="index"
     >
