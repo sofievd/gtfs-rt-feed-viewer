@@ -5,7 +5,7 @@
           type="text"
           v-model="fileUrl"
           placeholder="Enter URL"
-          class="flex-1 px-8 py-4 border border-indigo-900 border-2 min-w-[600px] rounded-3xl"
+          class="flex-1 px-8 py-4 border border-indigo-900 border-2 min-w-[800px] rounded-3xl"
       />
 
     </div>
@@ -44,8 +44,9 @@
       </p>
 
       <!-- Show selected files -->
-      <div v-if="fileName" class="mt-4 text-lg text-indigo-900">
-        📄 {{ fileName }}
+      <div v-if="fileName" class="mt-4 text-lg text-indigo-900 flex justify-center gap-2">
+           <DocumentIcon class="text-indigo-900 size-6 float-center"/>
+        {{ fileName }}
       </div>
       <div v-else>
         {{ statusMessageFile }}
@@ -64,8 +65,12 @@
 </template>
 
 <script>
+import { DocumentIcon }  from '@heroicons/vue/24/outline'
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+
 export default {
   name: "FeedPicker",
+  components: { DocumentIcon, FontAwesomeIcon},
 
   data() {
     return {
