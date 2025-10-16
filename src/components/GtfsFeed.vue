@@ -1,11 +1,12 @@
 <template>
   <div>
     <h2 class="text-center text-xl font-bold">Feed</h2>
-    <div>
+<!--    <div>
       <TabGroup>
         <template v-slot:header>
           <TabTitle tag="json" title="Json view"/>
           <TabTitle tag="tree" title="Tree view"/>
+          <TabTitle title="Table view" tag="table" />
         </template>
 
         <template v-slot:tab.json>
@@ -27,8 +28,17 @@
 
           </Tab>
         </template>
+
+        <template v-slot:tab.table>
+          <Tab tag="table">
+
+
+
+          </Tab>
+          </template>
+
       </TabGroup>
-    </div>
+    </div>-->
 
 
     <!--
@@ -49,6 +59,14 @@
 
 
     </div> -->
+    <div v-for="(entity, index) in feed.entity" :key="index">
+
+      <GtfsTableView :feed="entity"/>
+
+    </div>
+
+
+
   </div>
 </template>
 
@@ -58,10 +76,11 @@ import GtfsJsonViewer from "@/components/GtfsJsonViewer.vue";
 import TabGroup from "@/components/TabGroup.vue";
 import Tab from "@/components/Tab.vue";
 import TabTitle from "@/components/TabTitle.vue";
+import GtfsTableView from "@/components/GtfsTableView.vue";
 
 export default {
   name: "GtfsFeed",
-  components: {GtfsFeedEntity, GtfsJsonViewer, TabGroup, Tab, TabTitle},
+  components: {GtfsTableView, GtfsFeedEntity, GtfsJsonViewer, TabGroup, Tab, TabTitle},
   props: ['feed']
 }
 </script>

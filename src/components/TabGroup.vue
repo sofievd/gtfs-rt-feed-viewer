@@ -1,6 +1,6 @@
 <template lang="html">
   <div>
-    <div class="tab-header">
+    <div class="mb-4">
       <slot name="header" ></slot>
     </div>
 
