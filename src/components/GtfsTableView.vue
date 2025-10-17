@@ -1,9 +1,7 @@
 <template>
-  <!--  <pre>
-    {{JSON.stringify(feed, undefined, 2)}}
-  </pre>
- -->
-
+<!--<pre>
+  {{JSON.stringify(feed, undefined, 2)}}
+</pre>-->
   <div class="flex justify-center">
     <table class="border border-indigo-900 text-center" v-if="hasTripUpdates">
       <thead>
@@ -36,7 +34,7 @@
       </tbody>
     </table>
 
-    <table class="border border-indigo-900 text-center" v-if="hasAlerts">
+    <table class="border border-indigo-900 text-center" v-else>
       <thead>
       <tr class="border broder-indigo-900 p-2">
         <th class="p-2 border"> Alert ID</th>
@@ -61,17 +59,50 @@
           <td class="border px-2">{{ formatEnumName(getCauseName(entity.alert.cause)) }}</td>
           <td class="border px-2">{{ formatEnumName(getEffectName(entity.alert.effect)) }}</td>
           <td class="border px-2">
-            <p>Agency ID : {{entityInfo.agencyId ?? '-'}} </p>
-            <p>RouteID: {{entityInfo.routeId ?? '-'}} </p>
-            <p>Route type: {{getRouteType(entityInfo.routeType) ??  '-'}} </p>
-            <p>Direction ID: {{entityInfo.directionId ?? '-'}} </p>
-            <p>Trip: {{entityInfo.trip ?? '-'}} </p>
-            <p>Stop ID : {{entityInfo.stopId ?? '-'}} </p>
+
+            <p v-if="entityInfo.agencyId">Agency ID : {{entityInfo.agencyId}} </p>
+            <p v-if="entityInfo.routeId" >RouteID: {{entityInfo.routeId }} </p>
+            <p v-if="entityInfo.routeType">Route type: {{getRouteType(entityInfo.routeType)}} </p>
+            <p v-if="entityInfo.directionId">Direction ID: {{entityInfo.directionId }} </p>
+            <p v-if="entityInfo.trip">Trip: {{entityInfo.trip }} </p>
+            <p v-if="entityInfo.stopId">Stop ID : {{entityInfo.stopId}} </p>
           </td>
         </tr>
       </template>
       </tbody>
     </table>
+
+    <table class="border border-indigo-900 text-center" v-if="hasVehiclePosition">
+      <thead>
+      <tr class="border broder-indigo-900 p-2">
+        <th class="p-2 border"> Trip ID</th>
+        <th class="p-2 border">Position</th>
+        <th class="p-2 border">Speed</th>
+        <th class="p-2 border">Bearing</th>
+        <th class="p-2 border">Schedule</th>
+        <th class="p-2 border">TimeStamp</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <template v-for="entity in feed.entity" :key="entity.id">
+
+        <tr>
+          <td class="border px-2"> {{ entity.vehicle.trip?.tripId }}</td>
+          <td class="border px-2">
+            <p> lat: {{entity.vehicle.position.latitude}} </p>
+            <p> long: {{entity.vehicle.position.longitude}} </p>
+          </td>
+          <td class="border px-2">{{ entity.vehicle.position.speed }} m/s</td>
+          <td class="border px-2">{{ entity.vehicle.position.bearing }}</td>
+          <td class="border px-2">{{ formatEnumName(getScheduleName(entity.vehicle.trip?.scheduleRelationship))}}</td>
+          <td class="border px-2">{{ getDate(entity.vehicle.timestamp)}}</td>
+
+        </tr>
+      </template>
+      </tbody>
+    </table>
+
   </div>
 
 
@@ -85,25 +116,11 @@ export default {
     hasTripUpdates() {
       return this.feed.entity.some(e => e.tripUpdate)
     },
-    hasAlerts() {
-      return Array.isArray(this.feed.entity) &&
-          this.feed.entity.some(entity => entity.alert !== undefined)
+    hasVehiclePosition(){
+      return this.feed.entity.some(e => e.vehicle)
     }
-
   },
   methods: {
-    getAverageDelay(entity) {
-      const updates = entity.tripUpdate?.stopTimeUpdate || [];
-      const delays = updates
-          .map(s => s.arrival?.delay ?? s.departure?.delay)
-          .filter(d => typeof d === 'number');
-
-      if (!delays.length) return null;
-
-      const avg = delays.reduce((a, b) => a + b, 0) / delays.length;
-      console.log(Math.round(avg))
-      return Math.round(avg);
-    },
     getScheduleName(scheduleCode) {
       const scheduleMap = {
         0: "SCHEDULED",
