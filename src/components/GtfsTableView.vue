@@ -8,23 +8,32 @@
       <thead>
       <tr class="border broder-indigo-900 p-2">
         <th class="p-2 border">Trip Id</th>
-        <th class="p-2 border"> Start Date</th>
-        <th class="p-2 border">Avg Delay</th>
+        <th class="p-2 border">Start date</th>
+        <th class="p-2 border"> Sequence number</th>
+        <th class="p-2 border">Arrival Delay</th>
+        <th class="p-2 border">Departure Delay</th>
         <th class="p-2 border">Schedule</th>
-        <th class="p-2 border"> Num updates</th>
       </tr>
       </thead>
 
       <tbody>
-      <tr class="border">
-        <td class="border px-2">
-          {{ feed }}
-        </td>
-<!--        <td class="border px-2">{{ entity.tripUpdate.trip.startDate }}</td>
-        <td class="border px-2">{{ getAverageDelay(entity) }}</td>
-        <td class="border px-2"> {{ formatEnumName(getScheduleName(entity.tripUpdate.trip.scheduleRelationship)) }}</td>
-        <td class="border px-2"> {{ entity.tripUpdate.stopTimeUpdate.length }}</td>-->
-      </tr>
+      <template v-for="entity in feed.entity" :key="entity.id">
+
+        <tr v-for="stop in entity.tripUpdate.stopTimeUpdate" :key="stop.stopSequence">
+
+          <td class="border"> {{ entity.tripUpdate.trip.tripId }}</td>
+          <td class="border px-2"> {{ formatDate(entity.tripUpdate.trip.startDate) }}</td>
+          <td class="border px-2">{{ stop.stopSequence }}</td>
+          <td class="border px-2">{{ stop.arrival.delay }}</td>
+          <td class="border px-2">{{ stop.departure.delay }}</td>
+          <td class="border px-2"> {{
+              formatEnumName(getScheduleName(entity.tripUpdate.trip.scheduleRelationship))
+            }}
+          </td>
+
+
+        </tr>
+      </template>
       </tbody>
     </table>
   </div>
@@ -63,6 +72,14 @@ export default {
           ? value.replace(/_/g, ' ').toLowerCase().replace(/^\w/, c => c.toUpperCase())
           : 'Unknown';
     },
+    formatDate(dateString) {
+
+      if (!dateString || dateString.length !== 8) {
+        return '-'
+      }
+      const cleanedDateString = dateString.trim()
+      return `${cleanedDateString.substring(0,4)}-${cleanedDateString.substring(4,6)}-${cleanedDateString.substring(6,8)}`;
+    }
 
   }
 }
