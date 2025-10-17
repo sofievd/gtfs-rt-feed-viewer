@@ -2,7 +2,7 @@
   <div>
     <h2 class="text-center text-xl font-bold">Feed</h2>
 
-      <TabGroup>
+     <TabGroup>
         <template v-slot:header>
           <TabTitle tag="json" title="Json view"/>
           <TabTitle tag="tree" title="Tree view"/>
@@ -32,11 +32,7 @@
         <template v-slot:tab.table>
           <Tab tag="table">
 
-            <!--<div v-for="(entity, index) in feed.entity" :key="index"> -->
-
               <GtfsTableView :feed="feed"/>
-
-           <!-- </div> -->
 
           </Tab>
           </template>
@@ -62,12 +58,8 @@
       </div>
 
 
-    </div> -->
-     <!--<div v-for="(entity, index) in feed.entity" :key="index">
 
-      <GtfsTableView :entity="entity"/>
-
-    </div> -->
+  </div> -->
 
 </template>
 
