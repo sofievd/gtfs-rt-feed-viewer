@@ -10,7 +10,7 @@
 
     <div v-if="entity.tripUpdate" class="text-gray-800">
       <span class="font-semibold text-indigo-900">Trip {{ entity.tripUpdate.trip?.tripId || '' }}
-        ({{ entity.tripUpdate.stopTimeUpdate.length }} updates, avg delay {{ getAverageDelay(entity) || ' '}}s)</span>
+        ({{ entity.tripUpdate.stopTimeUpdate.length }} updates, avg delay {{ getAverageDelay(entity) }}s)</span>
     </div>
 
     <div v-if="entity.alert" class="text-gray-800">
