@@ -14,8 +14,8 @@
                         :icon="isExpanded ? 'fa-angle-up' : 'fa-angle-down'"/>-->
 
       {{ title }}
-      <span class="float-end">
-        <a @click.stop="expand(true)"> <PlusIcon class="inline size-6 text-indigo-900 stroke-[2]" /> </a>
+      <span>
+       [ <a @click.stop="expand(true)"> + </a>]
       </span>
     </div>
 
