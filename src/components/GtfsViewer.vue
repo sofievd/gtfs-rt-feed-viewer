@@ -4,6 +4,7 @@
       <h1 class="text-4xl my-8 font-semibold">Gtfs-RT Feed Viewer</h1>
       <div class="mb-8 text-center">
         <p> View and inspect your GTFS Realtime (.pb) data. </p>
+        <p> To learn more about GTFS and the Realtime data visit: <a href="https://gtfs.org/" target="_blank" class="text-indigo-900">The  Official GTFS documentation</a></p>
         <p> Upload a file from your device or provide a feed URL to see its contents instantly. </p>
       </div>
       <FeedPicker @file-buffer="handleUint8Array"/>
