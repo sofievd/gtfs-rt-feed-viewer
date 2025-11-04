@@ -1,7 +1,7 @@
 <template>
   <button
       class="cursor-pointer border-indigo-900 border p-2 mx-2 rounded-3xl"
-      :class="isActive"
+      :class="[isActive ? 'bg-indigo-900 text-white' : 'bg-white text-black' ]"
       @click="selectTab(tag)">
     {{ title }}
   </button>

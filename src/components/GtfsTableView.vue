@@ -1,9 +1,7 @@
 <template>
-<!--<pre>
-  {{JSON.stringify(feed, undefined, 2)}}
-</pre>-->
+
   <div class="flex justify-center">
-    <table class="border border-indigo-900 text-center" v-if="hasTripUpdates">
+    <table class="border border-indigo-900 text-center" v-if="feedType === 'tripUpdates'">
       <thead>
       <tr class="border broder-indigo-900 p-2">
         <th class="p-2 border">Trip Id</th>
@@ -34,7 +32,38 @@
       </tbody>
     </table>
 
-    <table class="border border-indigo-900 text-center" v-else>
+    <table class="border border-indigo-900 text-center" v-if="feedType === 'vehicles'">
+      <thead>
+      <tr class="border broder-indigo-900 p-2">
+        <th class="p-2 border"> Trip ID</th>
+        <th class="p-2 border">Position</th>
+        <th class="p-2 border">Speed</th>
+        <th class="p-2 border">Bearing</th>
+        <th class="p-2 border">Schedule</th>
+        <th class="p-2 border">TimeStamp</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <template v-for="entity in feed.entity" :key="entity.id">
+
+        <tr>
+          <td class="border px-2"> {{ entity.vehicle.trip?.tripId }}</td>
+          <td class="border px-2">
+            <p> lat: {{entity.vehicle.position.latitude}} </p>
+            <p> long: {{entity.vehicle.position.longitude}} </p>
+          </td>
+          <td class="border px-2">{{ entity.vehicle.position.speed }} m/s</td>
+          <td class="border px-2">{{ entity.vehicle.position.bearing }}</td>
+          <td class="border px-2">{{ formatEnumName(getScheduleName(entity.vehicle.trip?.scheduleRelationship))}}</td>
+          <td class="border px-2">{{ getDate(entity.vehicle.timestamp)}}</td>
+
+        </tr>
+      </template>
+      </tbody>
+    </table>
+
+    <table class="border border-indigo-900 text-center" v-if="feedType === 'alerts'">
       <thead>
       <tr class="border broder-indigo-900 p-2">
         <th class="p-2 border"> Alert ID</th>
@@ -72,36 +101,7 @@
       </tbody>
     </table>
 
-    <table class="border border-indigo-900 text-center" v-if="hasVehiclePosition">
-      <thead>
-      <tr class="border broder-indigo-900 p-2">
-        <th class="p-2 border"> Trip ID</th>
-        <th class="p-2 border">Position</th>
-        <th class="p-2 border">Speed</th>
-        <th class="p-2 border">Bearing</th>
-        <th class="p-2 border">Schedule</th>
-        <th class="p-2 border">TimeStamp</th>
-      </tr>
-      </thead>
 
-      <tbody>
-      <template v-for="entity in feed.entity" :key="entity.id">
-
-        <tr>
-          <td class="border px-2"> {{ entity.vehicle.trip?.tripId }}</td>
-          <td class="border px-2">
-            <p> lat: {{entity.vehicle.position.latitude}} </p>
-            <p> long: {{entity.vehicle.position.longitude}} </p>
-          </td>
-          <td class="border px-2">{{ entity.vehicle.position.speed }} m/s</td>
-          <td class="border px-2">{{ entity.vehicle.position.bearing }}</td>
-          <td class="border px-2">{{ formatEnumName(getScheduleName(entity.vehicle.trip?.scheduleRelationship))}}</td>
-          <td class="border px-2">{{ getDate(entity.vehicle.timestamp)}}</td>
-
-        </tr>
-      </template>
-      </tbody>
-    </table>
 
   </div>
 
@@ -117,7 +117,19 @@ export default {
       return this.feed.entity.some(e => e.tripUpdate)
     },
     hasVehiclePosition(){
+      console.log(this.feed.entity)
       return this.feed.entity.some(e => e.vehicle)
+    },
+    feedType() {
+      if (!this.feed || !Array.isArray(this.feed.entity) || this.feed.entity.length === 0) {
+        return null;
+      }
+
+      const first = this.feed.entity[0];
+      if (first.vehicle) return 'vehicles';
+      if (first.tripUpdate) return 'tripUpdates';
+      if (first.alert) return 'alerts';
+      return null;
     }
   },
   methods: {
