@@ -12,7 +12,7 @@
       <div class="flex-1"></div>
       </section>
       <section v-if="feed" ref="feedContent" class="min-h-[calc(100vh-5rem)] scroll-mt-20 w-full py-6">
-        <GtfsFeed :feed="feed" class="bg-gray-50 w-full max-w-[800px] mx-auto py-4 px-4 rounded-3xl"/>
+        <GtfsFeed :key="feedVersion" :feed="feed" class="bg-gray-50 w-full max-w-[800px] mx-auto py-4 px-4 rounded-3xl"/>
       </section>
     </div>
 </template>
@@ -33,6 +33,7 @@ export default {
   data() {
     return {
       feed: null,
+      feedVersion: 0,
       fileUrl: "",
       fileName: "",
       statusMessage: "",
@@ -45,6 +46,7 @@ export default {
         const FeedMessage = root.transit_realtime.FeedMessage;
         const decoded = FeedMessage.decode(arrayBuffer);
         this.feed = decoded;
+        this.feedVersion += 1;
         this.$emit('feed-loaded', fileName);
         this.$nextTick(() => {
           this.$refs.feedContent?.scrollIntoView({

@@ -14,9 +14,12 @@
 <script>
 export default {
   name: "TabGroup",
+  props: {
+    initialTab: { type: String, default: null },
+  },
   data() {
     return {
-      activeTab: null
+      activeTab: this.initialTab
     }
   },
   provide() {
@@ -27,7 +30,7 @@ export default {
   },
   mounted() {
    const firstTab = this.$slots.header?.()[0].props?.tag;
-    if (firstTab) {
+    if (!this.activeTab && firstTab) {
       this.activeTab = firstTab
     }
   },

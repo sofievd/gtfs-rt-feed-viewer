@@ -2,11 +2,12 @@
   <div>
     <h2 class="text-center text-xl font-bold">Feed</h2>
 
-     <TabGroup>
+     <TabGroup :initial-tab="vehicleEntities.length ? 'map' : 'json'">
         <template v-slot:header>
           <TabTitle tag="json" title="Json view"/>
           <TabTitle tag="tree" title="Tree view"/>
           <TabTitle title="Table view" tag="table" />
+          <TabTitle v-if="vehicleEntities.length" title="Map view" tag="map" />
         </template>
 
         <template v-slot:tab.json>
@@ -37,6 +38,11 @@
           </Tab>
           </template>
 
+        <template v-slot:tab.map>
+          <Tab v-if="vehicleEntities.length" tag="map">
+            <GtfsMapView :entities="vehicleEntities" />
+          </Tab>
+        </template>
       </TabGroup>
     </div>
 
@@ -70,11 +76,21 @@ import TabGroup from "@/components/TabGroup.vue";
 import Tab from "@/components/Tab.vue";
 import TabTitle from "@/components/TabTitle.vue";
 import GtfsTableView from "@/components/GtfsTableView.vue";
+import { defineAsyncComponent } from "vue";
+import { getVehicleEntities } from "@/utils/vehiclePositions.js";
 
 export default {
   name: "GtfsFeed",
-  components: {GtfsTableView, GtfsFeedEntity, GtfsJsonViewer, TabGroup, Tab, TabTitle},
-  props: ['feed']
+  components: {
+    GtfsMapView: defineAsyncComponent(() => import("@/components/GtfsMapView.vue")),
+    GtfsTableView, GtfsFeedEntity, GtfsJsonViewer, TabGroup, Tab, TabTitle,
+  },
+  props: ['feed'],
+  computed: {
+    vehicleEntities() {
+      return getVehicleEntities(this.feed);
+    },
+  },
 }
 </script>
 
