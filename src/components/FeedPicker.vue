@@ -70,6 +70,7 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 export default {
   name: "FeedPicker",
+  emits: ['file-buffer'],
   components: { DocumentIcon, FontAwesomeIcon},
 
   data() {
@@ -112,7 +113,7 @@ export default {
       reader.onload = async (e) => {
         const arrayBuffer = e.target.result;
         const uint8Array = new Uint8Array(arrayBuffer);
-        this.$emit('file-buffer', uint8Array);
+        this.$emit('file-buffer', uint8Array, file.name);
       }
       reader.readAsArrayBuffer(file);
 
@@ -135,7 +136,8 @@ export default {
 
       try {
         this.statusMessage = "Downloading file..."
-        const response = await fetch(this.fileUrl)
+        const feedUrl = new URL(this.fileUrl);
+        const response = await fetch(feedUrl)
         if (!response.ok) throw new Error("Failed to download file");
 
         const blob = await response.blob();
@@ -143,7 +145,8 @@ export default {
         const uint8Array = new Uint8Array(arrayBuffer);
         this.statusMessage = " File downloaded successfully!"
 
-        this.$emit("file-buffer", uint8Array)
+        const fileName = feedUrl.pathname.split('/').pop() || feedUrl.hostname;
+        this.$emit("file-buffer", uint8Array, fileName)
       } catch (error) {
         console.log(error);
         this.statusMessage = "Error downloading file."

@@ -1,5 +1,6 @@
 <template>
-    <div class="flex flex-col items-center h-screen">
+    <div class="flex flex-col items-center">
+      <section class="flex flex-col items-center min-h-[calc(100vh-5rem)]">
       <div class="flex-1"></div>
       <h1 class="text-4xl my-8 font-semibold">Gtfs-RT Feed Viewer</h1>
       <div class="mb-8 text-center">
@@ -8,8 +9,11 @@
         <p> Upload a file from your device or provide a feed URL to see its contents instantly. </p>
       </div>
       <FeedPicker @file-buffer="handleUint8Array"/>
-      <GtfsFeed v-if="feed" :feed="feed" class="bg-gray-50 w-[800px] py-4 px-4 rounded-3xl"/>
       <div class="flex-1"></div>
+      </section>
+      <section v-if="feed" ref="feedContent" class="min-h-[calc(100vh-5rem)] scroll-mt-20 w-full py-6">
+        <GtfsFeed :feed="feed" class="bg-gray-50 w-full max-w-[800px] mx-auto py-4 px-4 rounded-3xl"/>
+      </section>
     </div>
 </template>
 
@@ -24,6 +28,7 @@ import GtfsFeed from "@/components/GtfsFeed.vue";
 
 export default {
   name: "GtfsViewer",
+  emits: ['feed-loaded'],
   components: {GtfsFeed, GtfsFeedEntity, TreeView, FontAwesomeIcon, TreeNode, FeedPicker},
   data() {
     return {
@@ -35,21 +40,28 @@ export default {
     }
   },
   methods: {
-    decodeProtobuf(arrayBuffer) {
+    decodeProtobuf(arrayBuffer, fileName) {
       try {
         const FeedMessage = root.transit_realtime.FeedMessage;
         const decoded = FeedMessage.decode(arrayBuffer);
         this.feed = decoded;
+        this.$emit('feed-loaded', fileName);
+        this.$nextTick(() => {
+          this.$refs.feedContent?.scrollIntoView({
+            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+            block: 'start',
+          });
+        });
 
         console.log('Decoded message:', decoded);
       } catch (error) {
         console.log(error);
       }
     },
-    handleUint8Array(uint8Array) {
+    handleUint8Array(uint8Array, fileName) {
       console.log("received file buffer: ", uint8Array);
 
-      this.decodeProtobuf(uint8Array);
+      this.decodeProtobuf(uint8Array, fileName);
     },
   }
 }
