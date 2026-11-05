@@ -5,7 +5,7 @@
           type="text"
           v-model="fileUrl"
           placeholder="Enter URL"
-          class="flex-1 px-8 py-4 border border-indigo-900 border-2 min-w-[800px] rounded-3xl"
+          class="flex-1 min-w-0 w-full px-8 py-4 border border-indigo-900 border-2 rounded-3xl"
       />
 
     </div>
@@ -113,7 +113,7 @@ export default {
       reader.onload = async (e) => {
         const arrayBuffer = e.target.result;
         const uint8Array = new Uint8Array(arrayBuffer);
-        this.$emit('file-buffer', uint8Array, file.name);
+        this.$emit('file-buffer', uint8Array, file.name, { source: 'upload' });
       }
       reader.readAsArrayBuffer(file);
 
@@ -146,7 +146,7 @@ export default {
         this.statusMessage = " File downloaded successfully!"
 
         const fileName = feedUrl.pathname.split('/').pop() || feedUrl.hostname;
-        this.$emit("file-buffer", uint8Array, fileName)
+        this.$emit("file-buffer", uint8Array, fileName, { source: 'url', url: feedUrl.href })
       } catch (error) {
         console.log(error);
         this.statusMessage = "Error downloading file."
