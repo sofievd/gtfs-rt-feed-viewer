@@ -12,38 +12,21 @@
       <p v-if="decodeError" role="alert" class="mb-4 text-red-700">{{ decodeError }}</p>
       <div class="flex-1"></div>
       </section>
-      <section v-if="feed" id="feed-content" class="min-h-[calc(100vh-8.5rem)] scroll-mt-[136px] w-full"
-               :class="{ 'px-4': !fullWidthView, 'py-6': activeView !== 'map' }">
-        <GtfsFeed :key="loadedFile.version" :feed="feed" :loaded-file="loadedFile" :active-view="activeView"
-                  class="bg-gray-50 w-full px-4"
-                  :class="{ 'max-w-[1200px] mx-auto rounded-3xl': !fullWidthView, 'py-4': activeView !== 'map' }"/>
-      </section>
+
     </div>
 </template>
 
 <script>
 import root from "/src/assets/gtfs-realtime.js";
 import FeedPicker from "@/components/FeedPicker.vue";
-import GtfsFeed from "@/components/GtfsFeed.vue";
+
 
 export default {
   name: "GtfsViewer",
   emits: ['feed-loaded'],
-  components: { GtfsFeed, FeedPicker },
-  props: {
-    loadedFile: { type: Object, default: null },
-    activeView: { type: String, default: 'json' },
-  },
+  components: { FeedPicker },
   data() {
     return { decodeError: '' }
-  },
-  computed: {
-    fullWidthView() {
-      return ['map', 'table', 'json', 'tree'].includes(this.activeView);
-    },
-    feed() {
-      return this.loadedFile?.feed;
-    },
   },
   methods: {
     handleUint8Array(uint8Array, fileName, source = {}) {

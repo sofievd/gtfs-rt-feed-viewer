@@ -17,7 +17,7 @@
       <RouterView v-slot="{ Component, route }">
         <KeepAlive :key="viewerKey" include="HomeView">
           <component :is="Component"
-                     v-bind="route.name === 'home' ? { loadedFile, activeView } : {}"
+                     v-bind="route.name === 'feed' ? { loadedFile, activeView } : {}"
                      @feed-loaded="handleFeedLoaded" />
         </KeepAlive>
       </RouterView>
@@ -47,12 +47,12 @@ export default {
       this.fileVersion += 1;
       this.loadedFile = { ...file, feed: markRaw(file.feed), version: this.fileVersion };
       this.activeView = this.hasMap ? 'map' : 'json';
-      if (this.$route.name !== 'home') await this.$router.push('/');
+      if (this.$route.name !== 'feed') await this.$router.push('/feed');
       this.scrollToFeed();
     },
     async selectView(view) {
       this.activeView = view;
-      if (this.$route.name !== 'home') await this.$router.push('/');
+      if (this.$route.name !== 'feed') await this.$router.push('/feed');
       this.scrollToFeed();
     },
     async scrollToFeed() {
