@@ -53,7 +53,9 @@
             <p> lat: {{entity.vehicle.position.latitude}} </p>
             <p> long: {{entity.vehicle.position.longitude}} </p>
           </td>
-          <td class="border px-2">{{ entity.vehicle.position.speed }} m/s</td>
+          <td class="border px-2">
+            <p v-for="line in formatSpeed(entity.vehicle.position)" :key="line">{{ line }}</p>
+          </td>
           <td class="border px-2">{{ entity.vehicle.position.bearing }}</td>
           <td class="border px-2">{{ formatEnumName(getScheduleName(entity.vehicle.trip?.scheduleRelationship))}}</td>
           <td class="border px-2">{{ getDate(entity.vehicle.timestamp)}}</td>
@@ -133,6 +135,14 @@ export default {
     }
   },
   methods: {
+    formatSpeed(position) {
+      if (!position || !Object.prototype.hasOwnProperty.call(position, 'speed') ||
+          !Number.isFinite(position.speed)) return ['-'];
+      return [
+        position.speed.toFixed(2) + ' m/s',
+        (position.speed * 3.6).toFixed(2) + ' km/h',
+      ];
+    },
     getScheduleName(scheduleCode) {
       const scheduleMap = {
         0: "SCHEDULED",
