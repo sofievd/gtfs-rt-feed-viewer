@@ -1,7 +1,7 @@
 <template>
 
-  <div class="flex justify-center">
-    <table class="border border-indigo-900 text-center" v-if="feedType === 'tripUpdates'">
+  <div class="w-full overflow-x-auto">
+    <table class="w-full border border-indigo-900 text-center" v-if="feedType === 'tripUpdates'">
       <thead>
       <tr class="border broder-indigo-900 p-2">
         <th class="p-2 border">Trip Id</th>
@@ -32,7 +32,7 @@
       </tbody>
     </table>
 
-    <table class="border border-indigo-900 text-center" v-if="feedType === 'vehicles'">
+    <table class="w-full border border-indigo-900 text-center" v-if="feedType === 'vehicles'">
       <thead>
       <tr class="border broder-indigo-900 p-2">
         <th class="p-2 border"> Trip ID</th>
@@ -63,7 +63,7 @@
       </tbody>
     </table>
 
-    <table class="border border-indigo-900 text-center" v-if="feedType === 'alerts'">
+    <table class="w-full border border-indigo-900 text-center" v-if="feedType === 'alerts'">
       <thead>
       <tr class="border broder-indigo-900 p-2">
         <th class="p-2 border"> Alert ID</th>

@@ -1,16 +1,16 @@
 <template>
-  <div>
-    <p v-if="!positions.length" class="rounded-xl border border-gray-200 p-6 text-center text-gray-600">
+  <div class="vehicle-map-view">
+    <p v-if="!positions.length" class="flex-1 rounded-xl border border-gray-200 p-6 text-center text-gray-600">
       No valid vehicle positions are available in this feed.
     </p>
     <template v-else>
-      <p v-if="tileError" role="status" class="mb-3 text-sm text-amber-800">
+      <p v-if="tileError" role="status" class="mb-3 shrink-0 text-sm text-amber-800">
         Map tiles could not be loaded. Vehicle positions are still available; check your internet connection.
       </p>
       <div ref="mapContainer" class="vehicle-map rounded-xl border border-gray-200"
            role="region" aria-label="Vehicle positions map"></div>
     </template>
-    <p class="mt-3 text-sm text-gray-600" role="status">
+    <p class="shrink-0 py-3 text-sm text-gray-600" role="status">
       {{ positions.length }} out of {{ entities.length }} positions shown on map, {{ skippedCount }} errors
     </p>
   </div>
@@ -149,8 +149,16 @@ export default {
 </script>
 
 <style scoped>
+.vehicle-map-view {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 136px);
+  height: calc(100dvh - 136px);
+}
+
 .vehicle-map {
-  height: 600px;
+  flex: 1;
+  min-height: 0;
   width: 100%;
   /* Keep Leaflet panes and controls below the site header. */
   isolation: isolate;

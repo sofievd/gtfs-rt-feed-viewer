@@ -12,9 +12,11 @@
       <p v-if="decodeError" role="alert" class="mb-4 text-red-700">{{ decodeError }}</p>
       <div class="flex-1"></div>
       </section>
-      <section v-if="feed" id="feed-content" class="min-h-[calc(100vh-8.5rem)] scroll-mt-[136px] w-full py-6 px-4">
+      <section v-if="feed" id="feed-content" class="min-h-[calc(100vh-8.5rem)] scroll-mt-[136px] w-full"
+               :class="{ 'px-4': !fullWidthView, 'py-6': activeView !== 'map' }">
         <GtfsFeed :key="loadedFile.version" :feed="feed" :loaded-file="loadedFile" :active-view="activeView"
-                  class="bg-gray-50 w-full max-w-[1200px] mx-auto py-4 px-4 rounded-3xl"/>
+                  class="bg-gray-50 w-full px-4"
+                  :class="{ 'max-w-[1200px] mx-auto rounded-3xl': !fullWidthView, 'py-4': activeView !== 'map' }"/>
       </section>
     </div>
 </template>
@@ -36,6 +38,9 @@ export default {
     return { decodeError: '' }
   },
   computed: {
+    fullWidthView() {
+      return ['map', 'table', 'json', 'tree'].includes(this.activeView);
+    },
     feed() {
       return this.loadedFile?.feed;
     },

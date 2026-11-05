@@ -1,6 +1,6 @@
 <template>
 <div>
-  <pre>
+  <pre class="w-full overflow-x-auto">
     {{JSON.stringify(data, undefined, 2)}}
   </pre>
 
