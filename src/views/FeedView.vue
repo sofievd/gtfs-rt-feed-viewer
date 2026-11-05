@@ -17,7 +17,7 @@ export default {
   },
   computed: {
     fullWidthView() {
-      return ['map', 'table', 'json', 'tree'].includes(this.activeView);
+      return ['map', 'table', 'json', 'tree', 'details'].includes(this.activeView);
     },
   },
   mounted() {

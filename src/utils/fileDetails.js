@@ -20,6 +20,17 @@ export function getFileDetails(file) {
   const timestamp = hasField(header, 'timestamp') ? header.timestamp?.toString() : null;
   const timestampDate = timestamp == null ? missing : formatDate(Number(timestamp) * 1000);
   const incrementality = header.incrementality ?? 0;
+  let firstUpdated = Infinity;
+  let lastUpdated = -Infinity;
+  for (const entity of entities) {
+    for (const update of [entity.vehicle, entity.tripUpdate]) {
+      if (!update || !hasField(update, 'timestamp') || update.timestamp == null) continue;
+      const seconds = Number(update.timestamp.toString());
+      if (!Number.isFinite(seconds) || seconds < 0 || formatDate(seconds * 1000) === missing) continue;
+      firstUpdated = Math.min(firstUpdated, seconds);
+      lastUpdated = Math.max(lastUpdated, seconds);
+    }
+  }
   const rows = [
     { label: 'Filename', value: file.name || missing },
     { label: 'Size', value: formatSize(file.size) },
@@ -27,9 +38,10 @@ export function getFileDetails(file) {
   ];
   if (file.source === 'url') rows.push({ label: 'Source URL', value: file.url || missing });
   rows.push(
-    { label: 'Loaded at (UTC)', value: file.loadedAt == null ? missing : formatDate(file.loadedAt) },
     { label: 'GTFS Realtime version', value: header.gtfsRealtimeVersion || missing },
-    { label: 'Feed timestamp (UTC)', value: timestamp == null ? missing : timestampDate === missing ? missing : timestampDate + ' (' + timestamp + ' Unix seconds)' },
+    { label: 'Feed timestamp (UTC)', value: timestamp == null ? missing : timestampDate === missing ? missing : timestampDate},
+      { label: 'First updated (UTC)', value: formatDate(firstUpdated * 1000) },
+      { label: 'Last updated (UTC)', value: formatDate(lastUpdated * 1000) },
     { label: 'Incrementality', value: incrementality === 0 ? 'FULL_DATASET' : incrementality === 1 ? 'DIFFERENTIAL' : 'Unknown (' + incrementality + ')' },
     { label: 'Total entities', value: entities.length },
     { label: 'Vehicle positions', value: entities.filter(entity => entity.vehicle != null).length },

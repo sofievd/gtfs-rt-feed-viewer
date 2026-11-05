@@ -1,5 +1,13 @@
 <template>
-  <div>
+  <div :aria-busy="isLoading">
+    <Teleport to="body">
+      <div v-if="isLoading" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/30">
+        <div role="status" aria-live="polite" class="flex items-center gap-4 rounded-2xl bg-white px-8 py-6 text-indigo-900 shadow-xl">
+          <span aria-hidden="true" class="size-8 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-900 motion-reduce:animate-none"></span>
+          <span>Loading feed…</span>
+        </div>
+      </div>
+    </Teleport>
     <div class="flex items-center gap-2">
       <input
           type="text"
@@ -53,8 +61,19 @@
       </div>
     </div>
 
+    <div class="mt-6 text-center text-sm text-indigo-900">
+      <p class="mb-2">Try a sample feed from Helsinki (HSL):</p>
+      <div class="flex flex-wrap justify-center gap-x-6 gap-y-2">
+        <a v-for="example in examples" :key="example.path"
+           :href="exampleBaseUrl + 'hsl-' + example.path + '.pb'"
+           :aria-disabled="isLoading"
+           class="underline hover:text-indigo-700 focus-visible:outline-2 focus-visible:outline-indigo-900"
+           @click.prevent="loadExample(example.path)">{{ example.label }}</a>
+      </div>
+    </div>
+
     <div class="text-center p-8">
-      <button @click="downloadFile"
+      <button @click="downloadFile" :disabled="isLoading"
               class="px-8 py-4  bg-indigo-900 rounded-3xl text-white hover:bg-indigo-800 text-lg">
         Show
       </button>
@@ -80,10 +99,22 @@ export default {
       statusMessageUrl: "",
       statusMessageFile: "",
       isDragging: false,
+      isLoading: false,
+      exampleBaseUrl: import.meta.env.BASE_URL + 'examples/',
       accept: ".pb,.pbf",
+      examples: [
+        { label: 'Vehicle positions', path: 'vehicle-positions' },
+        { label: 'Trip updates', path: 'trip-updates' },
+        { label: 'Service alerts', path: 'service-alerts' },
+      ],
     }
   },
   methods: {
+    loadExample(path) {
+      if (this.isLoading) return;
+      this.fileUrl = new URL(this.exampleBaseUrl + 'hsl-' + path + '.pb', window.location.href).href;
+      return this.downloadFile();
+    },
     onDragOver() {
       this.isDragging = true
     },
@@ -99,6 +130,7 @@ export default {
       this.handleFile(e.target.files[0])
     },
     async handleFile(file) {
+      if (this.isLoading) return;
 
       if (!file) return
 
@@ -122,20 +154,22 @@ export default {
       this.$refs.fileInput.click()
     },
     async downloadFile() {
+      if (this.isLoading) return;
       if (!this.fileUrl) {
-        this.statusMessage = "Please paste a URL!"
+        this.statusMessageUrl = "Please paste a URL!"
         return;
       }
 
       try {
         new URL(this.fileUrl); // Will throw if invalid
       } catch (_) {
-        this.statusMessage = "Invalid URL format!";
+        this.statusMessageUrl = "Invalid URL format!";
         return;
       }
 
       try {
-        this.statusMessage = "Downloading file..."
+        this.isLoading = true;
+        this.statusMessageUrl = "Downloading file..."
         const feedUrl = new URL(this.fileUrl);
         const response = await fetch(feedUrl)
         if (!response.ok) throw new Error("Failed to download file");
@@ -143,13 +177,15 @@ export default {
         const blob = await response.blob();
         const arrayBuffer = await blob.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
-        this.statusMessage = " File downloaded successfully!"
+        this.statusMessageUrl = "File downloaded successfully!"
 
         const fileName = feedUrl.pathname.split('/').pop() || feedUrl.hostname;
         this.$emit("file-buffer", uint8Array, fileName, { source: 'url', url: feedUrl.href })
       } catch (error) {
         console.log(error);
-        this.statusMessage = "Error downloading file."
+        this.statusMessageUrl = "Unable to download this feed. Check the URL and whether the server allows browser access (CORS)."
+      } finally {
+        this.isLoading = false;
       }
     }
 

@@ -29,7 +29,7 @@ test('explicit zero timestamp and differential feeds preserve protobuf semantics
   file.source = 'url';
   file.url = 'https://example.test/feed.pb';
   const rows = details(file);
-  assert.equal(rows['Feed timestamp (UTC)'], '1970-01-01T00:00:00.000Z (0 Unix seconds)');
+  assert.equal(rows['Feed timestamp (UTC)'], '1970-01-01T00:00:00.000Z');
   assert.equal(rows.Incrementality, 'DIFFERENTIAL');
   assert.equal(rows['Source URL'], file.url);
   assert.equal(rows.Source, 'URL');
@@ -55,4 +55,27 @@ test('missing metadata and unrepresentable timestamps render safely', () => {
   assert.equal(rows['Loaded at (UTC)'], 'Not provided');
   assert.equal(rows['Feed timestamp (UTC)'], 'Not provided');
   assert.equal(rows['Total entities'], 0);
+  assert.equal(rows['First updated (UTC)'], 'Not provided');
+  assert.equal(rows['Last updated (UTC)'], 'Not provided');
+});
+
+test('update range uses vehicle and trip observation timestamps, including explicit zero', () => {
+  const rows = details(makeFile({ gtfsRealtimeVersion: '2.0', timestamp: 900 }, [
+    { id: 'v', vehicle: { timestamp: 120 } },
+    { id: 't', tripUpdate: { trip: { tripId: 't' }, timestamp: 0 } },
+    { id: 'missing', vehicle: {} },
+    { id: 'a', alert: { activePeriod: [{ start: 1, end: 999 }] } },
+  ]));
+  assert.equal(rows['First updated (UTC)'], '1970-01-01T00:00:00.000Z');
+  assert.equal(rows['Last updated (UTC)'], '1970-01-01T00:02:00.000Z');
+});
+
+test('absent or invalid observation timestamps do not become epoch dates', () => {
+  const rows = details(makeFile(undefined, [
+    { id: 'v', vehicle: {} },
+    { id: 't', tripUpdate: { trip: {}, timestamp: '18446744073709551615' } },
+    { id: 'a', alert: { activePeriod: [{ start: 120 }] } },
+  ]));
+  assert.equal(rows['First updated (UTC)'], 'Not provided');
+  assert.equal(rows['Last updated (UTC)'], 'Not provided');
 });

@@ -2,7 +2,7 @@
   <div class="font-sans">
     <header class="sticky top-0 z-50 w-full bg-white">
       <nav aria-label="Site navigation" class="flex h-20 items-center gap-4 border-b border-gray-200 px-4 sm:gap-8 sm:px-6">
-        <RouterLink to="/" class="text-lg font-semibold text-indigo-900 sm:text-xl">Gtfs-RT Feed Viewer</RouterLink>
+        <RouterLink to="/" class="text-lg font-semibold text-indigo-900 sm:text-xl" @click.prevent="resetFeed">Gtfs-RT Feed Viewer</RouterLink>
         <div class="flex items-center gap-4 text-sm sm:gap-6">
           <RouterLink to="/documentation" class="text-indigo-900 hover:underline"
                       exact-active-class="font-semibold underline">Documentation</RouterLink>
@@ -11,7 +11,7 @@
         </div>
       </nav>
       <FileNavigation v-if="loadedFile" :file-name="loadedFile.name" :active-view="activeView"
-                      :has-map="hasMap" @select-view="selectView" @close="resetFeed" />
+                      :feed-header="loadedFile.feed.header" :has-map="hasMap" @select-view="selectView" @close="resetFeed" />
     </header>
     <main>
       <RouterView v-slot="{ Component, route }">

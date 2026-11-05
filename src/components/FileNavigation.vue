@@ -11,8 +11,12 @@
         {{ tab.label }}
       </button>
     </div>
-    <div class="ml-auto flex min-w-0 max-w-[35%] shrink-0 items-center gap-1 text-sm text-indigo-900">
-      <span class="min-w-0 truncate" :title="fileName">{{ fileName }}</span>
+    <div class="ml-auto flex min-w-0 max-w-[50%] shrink-0 items-center gap-1 text-sm text-indigo-900">
+      <div class="flex min-w-0 items-baseline gap-1">
+        <div class="truncate" :title="fileName">currently viewing: <strong class="font-bold">{{ fileName }}</strong></div>
+        <time v-if="timestampIso" :datetime="timestampIso" class="shrink-0 whitespace-nowrap text-xs" title="Feed timestamp (UTC)">({{ timestampIso.slice(0, 19).replace('T', ' ') }} UTC)</time>
+        <span v-else class="shrink-0 whitespace-nowrap text-xs">(Feed timestamp not provided)</span>
+      </div>
       <button type="button" @click="$emit('close')" aria-label="Close feed and return to landing page"
               class="shrink-0 rounded p-2 hover:bg-indigo-50 focus-visible:outline-2 focus-visible:outline-indigo-900">
         <XMarkIcon class="size-5" aria-hidden="true" />
@@ -29,6 +33,7 @@ export default {
   components: { XMarkIcon },
   props: {
     fileName: { type: String, required: true },
+    feedHeader: { type: Object, default: null },
     activeView: { type: String, required: true },
     hasMap: { type: Boolean, default: false },
   },
@@ -37,6 +42,13 @@ export default {
     return { tabButtons: [] }
   },
   computed: {
+    timestampIso() {
+      if (!this.feedHeader || !Object.prototype.hasOwnProperty.call(this.feedHeader, 'timestamp') ||
+          this.feedHeader.timestamp == null) return null;
+      const seconds = Number(this.feedHeader.timestamp.toString());
+      const date = new Date(seconds * 1000);
+      return seconds >= 0 && Number.isFinite(date.getTime()) ? date.toISOString() : null;
+    },
     tabs() {
       return [
         { id: 'details', label: 'File details' },
