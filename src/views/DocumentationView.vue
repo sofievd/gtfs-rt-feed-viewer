@@ -3,7 +3,7 @@
         <h1 class="text-3xl font-semibold text-indigo-900">Documentation</h1>
         <section class="space-y-2">
           <h2 class="text-xl font-semibold">Load a feed</h2>
-          <p>Select a .pb file from your device or drag it onto the upload area. To load a feed from a URL, paste the URL and select Show. The feed server must allow browser requests through CORS.</p>
+          <p>Select a .pb or .pbf file from your device or drag it onto the upload area. To load a feed from a URL, paste the URL and select Show. The feed server must allow browser requests through CORS.</p>
           <p>Once the feed is decoded, the page scrolls to its contents.</p>
         </section>
         <section class="space-y-2">

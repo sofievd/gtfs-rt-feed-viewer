@@ -14,17 +14,17 @@
       </thead>
 
       <tbody>
-      <template v-for="entity in feed.entity" :key="entity.id">
+      <template v-for="entity in tripEntities" :key="entity.id">
 
-        <tr v-for="stop in entity.tripUpdate.stopTimeUpdate" :key="stop.stopSequence">
+        <tr v-for="(stop, index) in entity.tripUpdate.stopTimeUpdate" :key="index">
 
-          <td class="border"> {{ entity.tripUpdate.trip.tripId }}</td>
-          <td class="border px-2"> {{ formatDate(entity.tripUpdate.trip.startDate) }}</td>
-          <td class="border px-2">{{ stop.stopSequence }}</td>
-          <td class="border px-2">{{ stop.arrival.delay }}</td>
-          <td class="border px-2">{{ stop.departure.delay }}</td>
+          <td class="border"> {{ entity.tripUpdate.trip?.tripId ?? '-' }}</td>
+          <td class="border px-2"> {{ formatDate(entity.tripUpdate.trip?.startDate) }}</td>
+          <td class="border px-2">{{ optionalValue(stop, 'stopSequence') }}</td>
+          <td class="border px-2">{{ optionalValue(stop.arrival, 'delay') }}</td>
+          <td class="border px-2">{{ optionalValue(stop.departure, 'delay') }}</td>
           <td class="border px-2"> {{
-              formatEnumName(getScheduleName(entity.tripUpdate.trip.scheduleRelationship))
+              formatEnumName(getScheduleName(entity.tripUpdate.trip?.scheduleRelationship))
             }}
           </td>
         </tr>
@@ -45,18 +45,18 @@
       </thead>
 
       <tbody>
-      <template v-for="entity in feed.entity" :key="entity.id">
+      <template v-for="entity in vehicleEntities" :key="entity.id">
 
         <tr>
           <td class="border px-2"> {{ entity.vehicle.trip?.tripId }}</td>
           <td class="border px-2">
-            <p> lat: {{entity.vehicle.position.latitude}} </p>
-            <p> long: {{entity.vehicle.position.longitude}} </p>
+            <p> lat: {{entity.vehicle.position?.latitude ?? '-'}} </p>
+            <p> long: {{entity.vehicle.position?.longitude ?? '-'}} </p>
           </td>
           <td class="border px-2">
             <p v-for="line in formatSpeed(entity.vehicle.position)" :key="line">{{ line }}</p>
           </td>
-          <td class="border px-2">{{ entity.vehicle.position.bearing }}</td>
+          <td class="border px-2">{{ optionalValue(entity.vehicle.position, 'bearing') }}</td>
           <td class="border px-2">{{ formatEnumName(getScheduleName(entity.vehicle.trip?.scheduleRelationship))}}</td>
           <td class="border px-2">{{ getDate(entity.vehicle.timestamp)}}</td>
 
@@ -79,7 +79,7 @@
       </thead>
 
       <tbody>
-      <template v-for="entity in feed.entity" :key="entity.id">
+      <template v-for="entity in alertEntities" :key="entity.id">
 
         <tr v-for="(entityInfo,index) in entity.alert.informedEntity"
             :key="index">
@@ -115,19 +115,22 @@ export default {
   name: "GtfsTableView",
   props: ["feed"],
   computed: {
-    hasTripUpdates() {
-      return this.feed.entity.some(e => e.tripUpdate)
+    tripEntities() {
+      return (this.feed?.entity || []).filter(entity => entity.tripUpdate);
     },
-    hasVehiclePosition(){
-      console.log(this.feed.entity)
-      return this.feed.entity.some(e => e.vehicle)
+    vehicleEntities() {
+      return (this.feed?.entity || []).filter(entity => entity.vehicle);
+    },
+    alertEntities() {
+      return (this.feed?.entity || []).filter(entity => entity.alert);
     },
     feedType() {
       if (!this.feed || !Array.isArray(this.feed.entity) || this.feed.entity.length === 0) {
         return null;
       }
 
-      const first = this.feed.entity[0];
+      const first = this.feed.entity.find(entity => entity.vehicle || entity.tripUpdate || entity.alert);
+      if (!first) return null;
       if (first.vehicle) return 'vehicles';
       if (first.tripUpdate) return 'tripUpdates';
       if (first.alert) return 'alerts';
@@ -135,6 +138,9 @@ export default {
     }
   },
   methods: {
+    optionalValue(message, field) {
+      return message && Object.prototype.hasOwnProperty.call(message, field) ? message[field] : '-';
+    },
     formatSpeed(position) {
       if (!position || !Object.prototype.hasOwnProperty.call(position, 'speed') ||
           !Number.isFinite(position.speed)) return ['-'];

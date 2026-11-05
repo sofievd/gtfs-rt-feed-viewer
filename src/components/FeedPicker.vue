@@ -10,7 +10,7 @@
 
     </div>
     <div class="text-sm text-indigo-900 text-center">
-      {{ statusMessageUrl || (fileUrl ? "Please enter a URL to download the .pb file." : "") }}
+      {{ statusMessageUrl || (fileUrl ? "Please enter a URL to download the .pb or .pbf file." : "") }}
     </div>
 
     <div class="text-2xl py-4 text-center">-OR-</div>
@@ -80,7 +80,7 @@ export default {
       statusMessageUrl: "",
       statusMessageFile: "",
       isDragging: false,
-      accept: ".pb",
+      accept: ".pb,.pbf",
     }
   },
   methods: {
@@ -102,8 +102,8 @@ export default {
 
       if (!file) return
 
-      if (!file.name.endsWith(".pb")) {
-        this.statusMessageFile = "Please upload a valid .pb file."
+      if (!/\.(pb|pbf)$/i.test(file.name)) {
+        this.statusMessageFile = "Please upload a valid .pb or .pbf file."
         return
       }
 

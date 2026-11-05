@@ -15,11 +15,9 @@
     </header>
     <main>
       <RouterView v-slot="{ Component, route }">
-        <KeepAlive :key="viewerKey" include="HomeView">
-          <component :is="Component"
+          <component :is="Component" :key="route.name + ':' + viewerKey"
                      v-bind="route.name === 'feed' ? { loadedFile, activeView } : {}"
                      @feed-loaded="handleFeedLoaded" />
-        </KeepAlive>
       </RouterView>
     </main>
   </div>
@@ -68,10 +66,10 @@ export default {
       });
     },
     async resetFeed() {
+      await this.$router.push('/');
       this.loadedFile = null;
       this.activeView = 'json';
       this.viewerKey += 1;
-      await this.$router.push('/');
       await this.$nextTick();
       requestAnimationFrame(() => window.scrollTo({
         top: 0,
