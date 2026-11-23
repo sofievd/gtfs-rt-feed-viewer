@@ -12,8 +12,9 @@
       <input
           type="text"
           v-model="fileUrl"
-          placeholder="Enter URL"
-          class="flex-1 min-w-0 w-full px-8 py-4 border border-indigo-900 border-2 rounded-3xl"
+          aria-label="File URL"
+          placeholder="Enter file URL"
+          class="flex-1 min-w-0 w-full px-8 py-4 border-2 border-black/24 bg-[#E3E1F5] rounded-lg text-left text-[#4A4966] placeholder:text-[#4A4966]"
       />
 
     </div>
@@ -21,11 +22,13 @@
       {{ statusMessageUrl || (fileUrl ? "Please enter a URL to download the .pb or .pbf file." : "") }}
     </div>
 
-    <div class="text-2xl py-4 text-center">-OR-</div>
-
     <div
-        class="border-2 border-dashed border-indigo-900 rounded-3xl p-8 text-center cursor-pointer transition-colors"
-        :class="isDragging ? 'border-blue-500 bg-indigo-50' : 'border-gray-300 bg-gray-50'"
+        class="mt-8 border-2 border-dashed border-black/24 rounded-lg p-8 text-left text-[#4A4966] cursor-pointer transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-900"
+        :class="isDragging ? 'bg-indigo-100' : 'bg-[#E3E1F5]'"
+        role="button"
+        tabindex="0"
+        @keydown.enter.prevent="triggerFileInput"
+        @keydown.space.prevent="triggerFileInput"
         @dragover.prevent="onDragOver"
         @dragleave.prevent="onDragLeave"
         @drop.prevent="onDrop"
@@ -42,18 +45,13 @@
       />
 
       <!-- Instructions -->
-      <p class="text-indigo-900 mb-2 text-2xl">
-        {{ isDragging ? 'Drop the files here…' : 'Drag & drop files here, or click to browse' }}
-      </p>
-
-      <!-- Optional file type hint -->
-      <p v-if="accept" class="text-md text-gray-400">
-        Accepted types: {{ accept }}
+      <p class="text-2xl">
+        {{ isDragging ? 'Drop the files here…' : 'Click or drop a protobuf file to load a local file' }}
       </p>
 
       <!-- Show selected files -->
-      <div v-if="fileName" class="mt-4 text-lg text-indigo-900 flex justify-center gap-2">
-           <DocumentIcon class="text-indigo-900 size-6 float-center"/>
+      <div v-if="fileName" class="mt-4 text-lg flex gap-2">
+           <DocumentIcon class="size-6"/>
         {{ fileName }}
       </div>
       <div v-else>
@@ -61,15 +59,13 @@
       </div>
     </div>
 
-    <div class="mt-6 text-center text-sm text-indigo-900">
-      <p class="mb-2">Try a sample feed from Helsinki (HSL):</p>
-      <div class="flex flex-wrap justify-center gap-x-6 gap-y-2">
-        <a v-for="example in examples" :key="example.path"
+    <div class="mt-6 text-left text-sm text-[#4A4966]">
+      <span>Try a sample feed from Helsinki (HSL): </span>
+        <template v-for="(example, index) in examples" :key="example.path"><span v-if="index">, </span><a
            :href="exampleBaseUrl + 'hsl-' + example.path + '.pb'"
            :aria-disabled="isLoading"
            class="underline hover:text-indigo-700 focus-visible:outline-2 focus-visible:outline-indigo-900"
-           @click.prevent="loadExample(example.path)">{{ example.label }}</a>
-      </div>
+           @click.prevent="loadExample(example.path)">{{ example.label }}</a></template>
     </div>
 
     <div class="text-center p-8">

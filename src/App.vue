@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-screen font-sans">
+  <div class="flex min-h-screen bg-[#F0F0FA] font-sans">
     <SidePanel @home="resetFeed" />
     <div class="min-w-0 flex-1">
       <header v-if="loadedFile" class="sticky top-0 z-50 bg-white">
