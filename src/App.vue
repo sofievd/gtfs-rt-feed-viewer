@@ -1,37 +1,32 @@
 <template>
-  <div class="font-sans">
-    <header class="sticky top-0 z-50 w-full bg-white">
-      <nav aria-label="Site navigation" class="flex h-20 items-center gap-4 border-b border-gray-200 px-4 sm:gap-8 sm:px-6">
-        <RouterLink to="/" class="text-lg font-semibold text-indigo-900 sm:text-xl" @click.prevent="resetFeed">Gtfs-RT Feed Viewer</RouterLink>
-        <div class="flex items-center gap-4 text-sm sm:gap-6">
-          <RouterLink to="/documentation" class="text-indigo-900 hover:underline"
-                      exact-active-class="font-semibold underline">Documentation</RouterLink>
-          <RouterLink to="/about" class="text-indigo-900 hover:underline"
-                      exact-active-class="font-semibold underline">About</RouterLink>
-        </div>
-      </nav>
-      <FileNavigation v-if="loadedFile" :file-name="loadedFile.name" :active-view="activeView"
-                      :feed-header="loadedFile.feed.header" :has-map="hasMap" @select-view="selectView" @close="resetFeed" />
-    </header>
-    <main>
+  <div class="flex min-h-screen font-sans">
+    <SidePanel @home="resetFeed" />
+    <div class="min-w-0 flex-1">
+      <header v-if="loadedFile" class="sticky top-0 z-50 bg-white">
+        <FileNavigation :file-name="loadedFile.name" :active-view="activeView"
+                        :feed-header="loadedFile.feed.header" :has-map="hasMap" @select-view="selectView" @close="resetFeed" />
+      </header>
+      <main>
       <RouterView v-slot="{ Component, route }">
           <component :is="Component" :key="route.name + ':' + viewerKey"
                      v-bind="route.name === 'feed' ? { loadedFile, activeView } : {}"
                      @feed-loaded="handleFeedLoaded" />
       </RouterView>
-    </main>
+      </main>
+    </div>
   </div>
 </template>
 
 <script>
 import { markRaw } from 'vue';
-import { RouterLink, RouterView } from 'vue-router';
+import { RouterView } from 'vue-router';
 import FileNavigation from '@/components/FileNavigation.vue';
+import SidePanel from '@/components/SidePanel.vue';
 import { getVehicleEntities } from '@/utils/vehiclePositions.js';
 
 export default {
   name: "App",
-  components: { RouterLink, RouterView, FileNavigation },
+  components: { RouterView, FileNavigation, SidePanel },
   data() {
     return { loadedFile: null, activeView: 'json', viewerKey: 0, fileVersion: 0 }
   },
@@ -60,7 +55,7 @@ export default {
         const content = document.getElementById('feed-content');
         if (!content) return;
         window.scrollTo({
-          top: window.scrollY + content.getBoundingClientRect().top - 136,
+          top: window.scrollY + content.getBoundingClientRect().top - 56,
           behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
         });
       });
