@@ -1,15 +1,15 @@
 <template>
 
-  <div class="w-full overflow-x-auto">
-    <table class="w-full border border-indigo-900 text-center" v-if="feedType === 'tripUpdates'">
+  <div class="w-full overflow-x-auto text-[#4A4966]">
+    <table class="w-full text-center" v-if="feedType === 'tripUpdates'">
       <thead>
-      <tr class="border broder-indigo-900 p-2">
-        <th class="p-2 border">Trip Id</th>
-        <th class="p-2 border">Start date</th>
-        <th class="p-2 border"> Sequence number</th>
-        <th class="p-2 border">Arrival Delay</th>
-        <th class="p-2 border">Departure Delay</th>
-        <th class="p-2 border">Schedule</th>
+      <tr class="border-b border-[#E3E1F5]">
+        <th class="p-2">Trip Id</th>
+        <th class="p-2">Start date</th>
+        <th class="p-2"> Sequence number</th>
+        <th class="p-2">Arrival Delay</th>
+        <th class="p-2">Departure Delay</th>
+        <th class="p-2">Schedule</th>
       </tr>
       </thead>
 
@@ -18,12 +18,12 @@
 
         <tr v-for="(stop, index) in entity.tripUpdate.stopTimeUpdate" :key="index">
 
-          <td class="border"> {{ entity.tripUpdate.trip?.tripId ?? '-' }}</td>
-          <td class="border px-2"> {{ formatDate(entity.tripUpdate.trip?.startDate) }}</td>
-          <td class="border px-2">{{ optionalValue(stop, 'stopSequence') }}</td>
-          <td class="border px-2">{{ optionalValue(stop.arrival, 'delay') }}</td>
-          <td class="border px-2">{{ optionalValue(stop.departure, 'delay') }}</td>
-          <td class="border px-2"> {{
+          <td class="px-2"> {{ entity.tripUpdate.trip?.tripId ?? '-' }}</td>
+          <td class="px-2"> {{ formatDate(entity.tripUpdate.trip?.startDate) }}</td>
+          <td class="px-2">{{ optionalValue(stop, 'stopSequence') }}</td>
+          <td class="px-2">{{ optionalValue(stop.arrival, 'delay') }}</td>
+          <td class="px-2">{{ optionalValue(stop.departure, 'delay') }}</td>
+          <td class="px-2"> {{
               formatEnumName(getScheduleName(entity.tripUpdate.trip?.scheduleRelationship))
             }}
           </td>
@@ -32,15 +32,15 @@
       </tbody>
     </table>
 
-    <table class="w-full border border-indigo-900 text-center" v-if="feedType === 'vehicles'">
+    <table class="w-full text-center" v-if="feedType === 'vehicles'">
       <thead>
-      <tr class="border broder-indigo-900 p-2">
-        <th class="p-2 border"> Trip ID</th>
-        <th class="p-2 border">Position</th>
-        <th class="p-2 border">Speed</th>
-        <th class="p-2 border">Bearing</th>
-        <th class="p-2 border">Schedule</th>
-        <th class="p-2 border">TimeStamp</th>
+      <tr class="border-b border-[#E3E1F5]">
+        <th class="p-2"> Trip ID</th>
+        <th class="p-2">Latitude</th>
+        <th class="p-2">Longitude</th>
+        <th class="p-2">Speed</th>
+        <th class="p-2">Updated At</th>
+        <th class="p-2">Age</th>
       </tr>
       </thead>
 
@@ -48,33 +48,33 @@
       <template v-for="entity in vehicleEntities" :key="entity.id">
 
         <tr>
-          <td class="border px-2"> {{ entity.vehicle.trip?.tripId }}</td>
-          <td class="border px-2">
-            <p> lat: {{entity.vehicle.position?.latitude ?? '-'}} </p>
-            <p> long: {{entity.vehicle.position?.longitude ?? '-'}} </p>
+          <td class="px-2"> {{ entity.vehicle.trip?.tripId }}</td>
+          <td class="px-2">
+            {{entity.vehicle.position?.latitude ?? '-'}}
           </td>
-          <td class="border px-2">
+          <td class="px-2">
+            {{entity.vehicle.position?.longitude ?? '-'}}
+          </td>
+          <td class="px-2">
             <p v-for="line in formatSpeed(entity.vehicle.position)" :key="line">{{ line }}</p>
           </td>
-          <td class="border px-2">{{ optionalValue(entity.vehicle.position, 'bearing') }}</td>
-          <td class="border px-2">{{ formatEnumName(getScheduleName(entity.vehicle.trip?.scheduleRelationship))}}</td>
-          <td class="border px-2">{{ getDate(entity.vehicle.timestamp)}}</td>
+          <td class="px-2">{{ getDate(entity.vehicle.timestamp)}}</td>
 
         </tr>
       </template>
       </tbody>
     </table>
 
-    <table class="w-full border border-indigo-900 text-center" v-if="feedType === 'alerts'">
+    <table class="w-full text-center" v-if="feedType === 'alerts'">
       <thead>
-      <tr class="border broder-indigo-900 p-2">
-        <th class="p-2 border"> Alert ID</th>
-        <th class="p-2 border">Start Time</th>
-        <th class="p-2 border">End Time</th>
-        <th class="p-2 border">Header Text</th>
-        <th class="p-2 border">Cause</th>
-        <th class="p-2 border"> Effect</th>
-        <th class="p-2 border">Informed Entity</th>
+      <tr class="border-b border-[#E3E1F5]">
+        <th class="p-2"> Alert ID</th>
+        <th class="p-2">Start Time</th>
+        <th class="p-2">End Time</th>
+        <th class="p-2">Header Text</th>
+        <th class="p-2">Cause</th>
+        <th class="p-2"> Effect</th>
+        <th class="p-2">Informed Entity</th>
       </tr>
       </thead>
 
@@ -83,13 +83,13 @@
 
         <tr v-for="(entityInfo,index) in entity.alert.informedEntity"
             :key="index">
-          <td class="border px-2"> {{ entity.id }}</td>
-          <td class="border px-2">{{ getDate(entity.alert.activePeriod?.[0]?.start) }}</td>
-          <td class="border px-2">{{ getDate(entity.alert.activePeriod?.[0]?.end) }}</td>
-          <td class="border px-2">{{ entity.alert.headerText?.translation?.[0]?.text ?? '-' }}</td>
-          <td class="border px-2">{{ formatEnumName(getCauseName(entity.alert.cause)) }}</td>
-          <td class="border px-2">{{ formatEnumName(getEffectName(entity.alert.effect)) }}</td>
-          <td class="border px-2">
+          <td class="px-2"> {{ entity.id }}</td>
+          <td class="px-2">{{ getDate(entity.alert.activePeriod?.[0]?.start) }}</td>
+          <td class="px-2">{{ getDate(entity.alert.activePeriod?.[0]?.end) }}</td>
+          <td class="px-2">{{ entity.alert.headerText?.translation?.[0]?.text ?? '-' }}</td>
+          <td class="px-2">{{ formatEnumName(getCauseName(entity.alert.cause)) }}</td>
+          <td class="px-2">{{ formatEnumName(getEffectName(entity.alert.effect)) }}</td>
+          <td class="px-2">
 
             <p v-if="entityInfo.agencyId">Agency ID : {{entityInfo.agencyId}} </p>
             <p v-if="entityInfo.routeId" >RouteID: {{entityInfo.routeId }} </p>
@@ -226,5 +226,8 @@ export default {
 </script>
 
 <style scoped>
+tbody tr + tr {
+  border-top: 1px solid #E3E1F5;
+}
 
 </style>
