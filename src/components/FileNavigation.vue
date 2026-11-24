@@ -52,10 +52,10 @@ export default {
     tabs() {
       return [
         { id: 'details', label: 'File details' },
-        { id: 'json', label: 'JSON' },
-        { id: 'tree', label: 'Tree' },
-        { id: 'table', label: 'Table' },
         ...(this.hasMap ? [{ id: 'map', label: 'Map' }] : []),
+        { id: 'json', label: 'JSON' },
+        // { id: 'tree', label: 'Tree' },
+        { id: 'table', label: 'Table' },
       ];
     },
   },
