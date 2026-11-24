@@ -1,6 +1,6 @@
 <template>
   <div class="flex min-h-screen bg-[#F0F0FA] font-sans">
-    <SidePanel @home="resetFeed" />
+    <SidePanel :theme="theme" @home="resetFeed" @toggle-theme="toggleTheme" />
     <div class="min-w-0 flex-1">
       <header v-if="loadedFile" ref="fileHeader" class="sticky top-0 z-50 bg-[#F0F0FA]">
         <FileNavigation :file-name="loadedFile.name" :active-view="activeView"
@@ -9,7 +9,7 @@
       <main>
       <RouterView v-slot="{ Component, route }">
           <component :is="Component" :key="route.name + ':' + viewerKey"
-                     v-bind="route.name === 'feed' ? { loadedFile, activeView } : {}"
+                     v-bind="route.name === 'feed' ? { loadedFile, activeView, theme } : {}"
                      @feed-loaded="handleFeedLoaded" />
       </RouterView>
       </main>
@@ -24,11 +24,29 @@ import FileNavigation from '@/components/FileNavigation.vue';
 import SidePanel from '@/components/SidePanel.vue';
 import { getVehicleEntities } from '@/utils/vehiclePositions.js';
 
+function savedTheme() {
+  try {
+    return localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
+  } catch (_) {
+    return 'light';
+  }
+}
+
 export default {
   name: "App",
   components: { RouterView, FileNavigation, SidePanel },
   data() {
-    return { loadedFile: null, activeView: 'json', viewerKey: 0, fileVersion: 0 }
+    return { loadedFile: null, activeView: 'json', viewerKey: 0, fileVersion: 0, theme: savedTheme() }
+  },
+  watch: {
+    theme: {
+      immediate: true,
+      handler(theme) {
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+        try { localStorage.setItem('theme', theme); } catch (_) { /* Storage may be unavailable. */ }
+      },
+    },
   },
   computed: {
     hasMap() {
@@ -36,6 +54,9 @@ export default {
     },
   },
   methods: {
+    toggleTheme() {
+      this.theme = this.theme === 'light' ? 'dark' : 'light';
+    },
     async handleFeedLoaded(file) {
       this.fileVersion += 1;
       this.loadedFile = { ...file, feed: markRaw(file.feed), version: this.fileVersion };

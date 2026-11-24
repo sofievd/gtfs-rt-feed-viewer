@@ -5,7 +5,7 @@
     </p>
     <template v-else>
       <p v-if="tileError" role="status" class="mb-3 shrink-0 text-sm text-amber-800">
-        Map tiles could not be loaded. Vehicle positions are still available; check your internet connection.
+        {{ tileError }}
       </p>
       <div ref="mapContainer" class="vehicle-map rounded-xl border border-gray-200"
            role="region" aria-label="Vehicle positions map"></div>
@@ -26,9 +26,10 @@ export default {
   name: 'GtfsMapView',
   props: {
     entities: { type: Array, required: true },
+    theme: { type: String, default: 'light' },
   },
   data() {
-    return { map: null, resizeObserver: null, tileError: false }
+    return { map: null, tileLayer: null, resizeObserver: null, tileError: '' }
   },
   computed: {
     vehiclePositions() {
@@ -55,17 +56,17 @@ export default {
       this.destroyMap();
       this.$nextTick(this.createMap);
     },
+    theme() {
+      this.updateTileLayer();
+    },
   },
   methods: {
     createMap() {
       if (this.map || !this.$refs.mapContainer || !this.positions.length) return;
 
-      this.tileError = false;
+      this.tileError = '';
       this.map = markRaw(L.map(this.$refs.mapContainer));
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).on('tileerror', () => { this.tileError = true; }).addTo(this.map);
+      this.updateTileLayer();
 
       const coordinates = [];
       for (const position of this.positions) {
@@ -91,6 +92,33 @@ export default {
         this.map?.invalidateSize({ pan: false });
       }));
       this.resizeObserver.observe(this.$refs.mapContainer);
+    },
+    updateTileLayer(fallback = false) {
+      if (!this.map) return;
+      if (this.tileLayer) this.map.removeLayer(this.tileLayer);
+      if (!fallback) this.tileError = '';
+      const dark = this.theme === 'dark' && !fallback;
+      const osmAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+      const layer = L.tileLayer(dark
+        ? 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png'
+        : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        className: fallback ? 'fallback-tiles' : '',
+        attribution: dark
+          ? '&copy; <a href="https://stadiamaps.com/attribution/">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          : osmAttribution,
+      });
+      this.tileLayer = markRaw(layer);
+      layer.on('tileerror', () => {
+        if (this.tileLayer !== layer) return;
+        if (dark) {
+          this.tileError = 'Dark map tiles could not be loaded; showing an alternative map.';
+          this.updateTileLayer(true);
+        } else {
+          this.tileError = 'Map tiles could not be loaded. Vehicle positions are still available; check your internet connection.';
+        }
+      });
+      layer.addTo(this.map);
     },
     createIcon(bearing) {
       const icon = document.createElement('div');
@@ -143,6 +171,7 @@ export default {
       this.resizeObserver = null;
       this.map?.remove();
       this.map = null;
+      this.tileLayer = null;
     },
   },
 }

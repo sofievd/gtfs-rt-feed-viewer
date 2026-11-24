@@ -4,3 +4,57 @@
 .font-sans {
   font-family: 'Inter', var(--font-sans);
 }
+
+:root {
+  --theme-background: #F0F0FA;
+  --theme-sidebar: #E3E1F5;
+  --theme-text: #4A4966;
+  --theme-border: #7977A6;
+  --theme-surface: #E3E1F5;
+  --theme-focus: #312e81;
+}
+
+:root[data-theme='dark'] {
+  --theme-background: #09081A;
+  --theme-sidebar: #262534;
+  --theme-text: #DADADC;
+  --theme-border: #85849c;
+  --theme-surface: #262534;
+  --theme-focus: #DADADC;
+}
+
+body { background: var(--theme-background); color: var(--theme-text); }
+
+.theme-toggle {
+  border: 1px solid var(--theme-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--theme-text);
+  cursor: pointer;
+}
+[data-theme='dark'] .theme-toggle { background: #444359; }
+.theme-toggle:focus-visible { outline: 2px solid var(--theme-focus); outline-offset: 2px; }
+
+/* Existing light-theme utility colors are mapped here for every routed view,
+   including the loading dialog teleported to body. */
+[data-theme='dark'] :is([class~='bg-[#F0F0FA]']) { background-color: var(--theme-background); }
+[data-theme='dark'] :is([class~='bg-[#E3E1F5]'], [class~='bg-indigo-100'], [class~='bg-white']) { background-color: var(--theme-surface); }
+[data-theme='dark'] :is([class~='text-[#4A4966]'], [class~='text-indigo-900'], [class~='text-gray-900'], [class~='text-gray-800'], [class~='text-gray-600'], [class~='text-black'], [class~='text-amber-800']) { color: var(--theme-text); }
+[data-theme='dark'] [class~='text-red-700'] { color: #ffb4b4; }
+[data-theme='dark'] :is([class~='border-[#7977A6]'], [class~='border-[#E3E1F5]'], [class~='border-gray-200'], [class~='border-gray-300'], [class~='border-indigo-900'], [class~='border-black/24']) { border-color: var(--theme-border); }
+[data-theme='dark'] [class~='border-[#4A4966]'] { border-color: var(--theme-text); }
+[data-theme='dark'] input::placeholder { color: var(--theme-text); opacity: 1; }
+[data-theme='dark'] :is(button, a, input, [role='button']):focus-visible { outline: 2px solid var(--theme-focus); outline-offset: 2px; }
+[data-theme='dark'] :is([class~='hover:text-indigo-700']):hover { color: #fff; }
+[data-theme='dark'] :is([class~='hover:bg-indigo-100']):hover { background-color: #444359; }
+[data-theme='dark'] table tbody tr + tr { border-color: var(--theme-border); }
+
+/* Fallback tiles retain a dark appearance if the dark tile service is unavailable. */
+[data-theme='dark'] .leaflet-tile-pane .fallback-tiles { filter: invert(1) hue-rotate(180deg) brightness(.8) contrast(.9); }
+[data-theme='dark'] .vehicle-map .vehicle-map-dot { background: #aaa8f0; }
+[data-theme='dark'] .vehicle-map .vehicle-map-direction::before { border-bottom-color: #aaa8f0; }
+[data-theme='dark'] .leaflet-popup-content-wrapper,
+[data-theme='dark'] .leaflet-popup-tip,
+[data-theme='dark'] .leaflet-bar a,
+[data-theme='dark'] .leaflet-control-attribution { background: var(--theme-sidebar); color: var(--theme-text); }
+[data-theme='dark'] .leaflet-control-attribution a { color: #c5c4ff; }

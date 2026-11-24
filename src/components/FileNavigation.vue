@@ -13,7 +13,7 @@
     </div>
     <div class="ml-auto flex min-w-0 max-w-[50%] shrink-0 items-center gap-1 text-sm">
       <div class="flex min-w-0 items-baseline gap-1">
-        <div class="truncate" :title="fileName">currently viewing: <strong class="font-bold">{{ fileName }}</strong></div>
+        <div class="truncate" :title="fileName"> <strong class="font-bold">{{ fileName }}</strong></div>
         <time v-if="timestampIso" :datetime="timestampIso" class="shrink-0 whitespace-nowrap text-xs" title="Feed timestamp (UTC)">({{ timestampIso.slice(0, 19).replace('T', ' ') }} UTC)</time>
         <span v-else class="shrink-0 whitespace-nowrap text-xs">(Feed timestamp not provided)</span>
       </div>

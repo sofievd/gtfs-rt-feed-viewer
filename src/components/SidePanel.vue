@@ -8,6 +8,11 @@
       <RouterLink to="/about" class="hover:underline" exact-active-class="underline">About</RouterLink>
     </nav>
     <hr class="border-t-2 border-[#7977A6]" />
+    <div class="px-6 py-6">
+      <button type="button" class="theme-toggle" @click="$emit('toggle-theme')">
+        {{ theme === 'dark' ? 'Light mode' : 'Dark mode' }}
+      </button>
+    </div>
   </aside>
 </template>
 
@@ -17,6 +22,7 @@ import { RouterLink } from 'vue-router';
 export default {
   name: 'SidePanel',
   components: { RouterLink },
-  emits: ['home'],
+  props: { theme: { type: String, required: true } },
+  emits: ['home', 'toggle-theme'],
 }
 </script>

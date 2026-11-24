@@ -8,7 +8,7 @@
       </div>
     </div>
     <GtfsTableView v-else-if="activeView === 'table'" :feed="feed" />
-    <GtfsMapView v-else-if="activeView === 'map' && vehicleEntities.length" :entities="vehicleEntities" />
+    <GtfsMapView v-else-if="activeView === 'map' && vehicleEntities.length" :entities="vehicleEntities" :theme="theme" />
     <FileDetails v-else-if="activeView === 'details'" :file="loadedFile" />
   </div>
 </template>
@@ -31,6 +31,7 @@ export default {
     feed: { type: Object, required: true },
     activeView: { type: String, required: true },
     loadedFile: { type: Object, required: true },
+    theme: { type: String, default: 'light' },
   },
   computed: {
     vehicleEntities() {
