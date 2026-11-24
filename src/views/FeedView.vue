@@ -1,8 +1,8 @@
 <template>
-      <section v-if="loadedFile" id="feed-content" class="min-h-[calc(100vh-8.5rem)] scroll-mt-[136px] w-full"
+      <section v-if="loadedFile" id="feed-content" class="min-h-[calc(100vh-73px)] scroll-mt-[73px] w-full"
                :class="{ 'px-4': !fullWidthView, 'py-6': activeView !== 'map' }">
         <GtfsFeed :key="loadedFile.version" :feed="loadedFile.feed" :loaded-file="loadedFile" :active-view="activeView"
-                  class="bg-gray-50 w-full px-4"
+                  class="w-full px-4"
                   :class="{ 'max-w-[1200px] mx-auto rounded-3xl': !fullWidthView, 'py-4': activeView !== 'map' }"/>
       </section>
 </template>

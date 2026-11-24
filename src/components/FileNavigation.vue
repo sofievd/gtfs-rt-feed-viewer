@@ -1,24 +1,24 @@
 <template>
-  <nav aria-label="File navigation" class="flex h-14 min-w-0 items-center gap-3 border-b border-gray-200 px-4 sm:gap-6 sm:px-6">
+  <nav aria-label="File navigation" class="flex h-[73px] min-w-0 items-center gap-3 border-b border-[#7977A6] px-4 text-[#4A4966] sm:gap-6 sm:px-6">
     <div role="tablist" aria-label="File views" class="relative flex h-full min-w-0 flex-1 overflow-x-auto">
       <button v-for="(tab, index) in tabs" :key="tab.id" :id="'file-tab-' + tab.id"
               :ref="element => { if (element) tabButtons[index] = element }"
               type="button" role="tab" :aria-selected="activeView === tab.id"
               :aria-controls="'file-panel-' + tab.id" :tabindex="activeView === tab.id ? 0 : -1"
-              class="h-full shrink-0 cursor-pointer whitespace-nowrap border-b-4 px-3 text-sm text-indigo-900 focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-indigo-900 sm:px-4"
-              :class="activeView === tab.id ? 'border-indigo-900 font-semibold' : 'border-transparent hover:border-indigo-200'"
+              class="h-full shrink-0 cursor-pointer whitespace-nowrap border-b-4 px-3 font-bold text-sm focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#4A4966] sm:px-4"
+              :class="activeView === tab.id ? 'border-[#4A4966] font-semibold' : 'border-transparent hover:border-[#7977A6]'"
               @click="$emit('select-view', tab.id)" @keydown="navigateTabs($event, index)">
         {{ tab.label }}
       </button>
     </div>
-    <div class="ml-auto flex min-w-0 max-w-[50%] shrink-0 items-center gap-1 text-sm text-indigo-900">
+    <div class="ml-auto flex min-w-0 max-w-[50%] shrink-0 items-center gap-1 text-sm">
       <div class="flex min-w-0 items-baseline gap-1">
         <div class="truncate" :title="fileName">currently viewing: <strong class="font-bold">{{ fileName }}</strong></div>
         <time v-if="timestampIso" :datetime="timestampIso" class="shrink-0 whitespace-nowrap text-xs" title="Feed timestamp (UTC)">({{ timestampIso.slice(0, 19).replace('T', ' ') }} UTC)</time>
         <span v-else class="shrink-0 whitespace-nowrap text-xs">(Feed timestamp not provided)</span>
       </div>
       <button type="button" @click="$emit('close')" aria-label="Close feed and return to landing page"
-              class="shrink-0 rounded p-2 hover:bg-indigo-50 focus-visible:outline-2 focus-visible:outline-indigo-900">
+              class="shrink-0 rounded p-2 hover:bg-indigo-100 focus-visible:outline-2 focus-visible:outline-[#4A4966]">
         <XMarkIcon class="size-5" aria-hidden="true" />
       </button>
     </div>

@@ -2,7 +2,7 @@
   <div class="flex min-h-screen bg-[#F0F0FA] font-sans">
     <SidePanel @home="resetFeed" />
     <div class="min-w-0 flex-1">
-      <header v-if="loadedFile" class="sticky top-0 z-50 bg-white">
+      <header v-if="loadedFile" ref="fileHeader" class="sticky top-0 z-50 bg-[#F0F0FA]">
         <FileNavigation :file-name="loadedFile.name" :active-view="activeView"
                         :feed-header="loadedFile.feed.header" :has-map="hasMap" @select-view="selectView" @close="resetFeed" />
       </header>
@@ -55,7 +55,7 @@ export default {
         const content = document.getElementById('feed-content');
         if (!content) return;
         window.scrollTo({
-          top: window.scrollY + content.getBoundingClientRect().top - 56,
+          top: window.scrollY + content.getBoundingClientRect().top - (this.$refs.fileHeader?.offsetHeight || 0),
           behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
         });
       });

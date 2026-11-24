@@ -14,7 +14,7 @@
           v-model="fileUrl"
           aria-label="File URL"
           placeholder="Enter file URL"
-          class="flex-1 min-w-0 w-full px-8 py-4 border-2 border-black/24 bg-[#E3E1F5] rounded-lg text-left text-[#4A4966] placeholder:text-[#4A4966]"
+          class="flex-1 min-w-0 w-full px-8 py-4 border-2 border-black/24 bg-[#E3E1F5] rounded-lg text-left text-[#4A4966] placeholder:text-[#4A4966] text-l"
       />
 
     </div>
@@ -23,7 +23,7 @@
     </div>
 
     <div
-        class="mt-8 border-2 border-dashed border-black/24 rounded-lg p-8 text-left text-[#4A4966] cursor-pointer transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-900"
+        class="mt-6 border-2 border-dashed border-black/24 rounded-lg p-4 text-left text-[#4A4966] cursor-pointer transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-900"
         :class="isDragging ? 'bg-indigo-100' : 'bg-[#E3E1F5]'"
         role="button"
         tabindex="0"
@@ -45,7 +45,7 @@
       />
 
       <!-- Instructions -->
-      <p class="text-2xl">
+      <p class="text-l">
         {{ isDragging ? 'Drop the files here…' : 'Click or drop a protobuf file to load a local file' }}
       </p>
 
