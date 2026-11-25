@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import root from "/src/assets/gtfs-realtime.js";
 import FeedPicker from "@/components/FeedPicker.vue";
+import { decodeFeed } from '@/utils/feedLoading.js';
 
 
 export default {
@@ -29,16 +29,10 @@ export default {
   methods: {
     handleUint8Array(uint8Array, fileName, source = {}) {
       try {
-        const feed = root.transit_realtime.FeedMessage.decode(uint8Array);
+        console.log("here")
+        const file = decodeFeed(uint8Array, fileName, source);
         this.decodeError = '';
-        this.$emit('feed-loaded', {
-          feed,
-          name: fileName,
-          size: uint8Array.byteLength,
-          source: source.source || 'upload',
-          url: source.url || null,
-          loadedAt: Date.now(),
-        });
+        this.$emit('feed-loaded', file);
       } catch (error) {
         this.decodeError = 'Unable to decode this file as a GTFS Realtime feed.';
         console.error(error);

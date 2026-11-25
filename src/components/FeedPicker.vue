@@ -13,13 +13,16 @@
           type="text"
           v-model="fileUrl"
           aria-label="File URL"
+          aria-describedby="feed-url-status"
           placeholder="Enter file URL"
+          enterkeyhint="go"
+          @keydown.enter.prevent="downloadFile"
           class="flex-1 min-w-0 w-full px-8 py-4 border-2 border-black/24 bg-[#E3E1F5] rounded-lg text-left text-[#4A4966] placeholder:text-[#4A4966] text-l"
       />
 
     </div>
-    <div class="text-sm text-indigo-900 text-center">
-      {{ statusMessageUrl || (fileUrl ? "Please enter a URL to download the .pb or .pbf file." : "") }}
+    <div id="feed-url-status" class="text-sm text-[#4A4966] text-center">
+      {{ statusMessageUrl }}
     </div>
 
     <div
@@ -68,20 +71,13 @@
            @click.prevent="loadExample(example.path)">{{ example.label }}</a></template>
     </div>
 
-    <div class="text-center p-8">
-      <button @click="downloadFile" :disabled="isLoading"
-              class="px-8 py-4  bg-indigo-900 rounded-3xl text-white hover:bg-indigo-800 text-lg">
-        Show
-      </button>
-    </div>
-
-
   </div>
 </template>
 
 <script>
 import { DocumentIcon }  from '@heroicons/vue/24/outline'
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import { downloadFeed } from '@/utils/feedLoading.js';
 
 export default {
   name: "FeedPicker",
@@ -167,12 +163,7 @@ export default {
         this.isLoading = true;
         this.statusMessageUrl = "Downloading file..."
         const feedUrl = new URL(this.fileUrl);
-        const response = await fetch(feedUrl)
-        if (!response.ok) throw new Error("Failed to download file");
-
-        const blob = await response.blob();
-        const arrayBuffer = await blob.arrayBuffer();
-        const uint8Array = new Uint8Array(arrayBuffer);
+        const uint8Array = await downloadFeed(feedUrl);
         this.statusMessageUrl = "File downloaded successfully!"
 
         const fileName = feedUrl.pathname.split('/').pop() || feedUrl.hostname;

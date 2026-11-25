@@ -10,6 +10,7 @@
         <th class="p-2">Arrival Delay</th>
         <th class="p-2">Departure Delay</th>
         <th class="p-2">Schedule</th>
+        <th class="p-2">Age</th>
       </tr>
       </thead>
 
@@ -27,6 +28,7 @@
               formatEnumName(getScheduleName(entity.tripUpdate.trip?.scheduleRelationship))
             }}
           </td>
+          <td class="px-2 whitespace-nowrap">{{ formatAge(entity.tripUpdate) }}</td>
         </tr>
       </template>
       </tbody>
@@ -59,6 +61,7 @@
             <p v-for="line in formatSpeed(entity.vehicle.position)" :key="line">{{ line }}</p>
           </td>
           <td class="px-2">{{ getDate(entity.vehicle.timestamp)}}</td>
+          <td class="px-2 whitespace-nowrap">{{ formatAge(entity.vehicle) }}</td>
 
         </tr>
       </template>
@@ -75,6 +78,7 @@
         <th class="p-2">Cause</th>
         <th class="p-2"> Effect</th>
         <th class="p-2">Informed Entity</th>
+        <th class="p-2">Age</th>
       </tr>
       </thead>
 
@@ -98,6 +102,7 @@
             <p v-if="entityInfo.trip">Trip: {{entityInfo.trip }} </p>
             <p v-if="entityInfo.stopId">Stop ID : {{entityInfo.stopId}} </p>
           </td>
+          <td class="px-2 whitespace-nowrap">{{ formatAge() }}</td>
         </tr>
       </template>
       </tbody>
@@ -111,10 +116,33 @@
 </template>
 
 <script>
+function timestampSeconds(message) {
+  if (!message || !Object.hasOwn(message, 'timestamp') || message.timestamp == null) return null;
+  const seconds = Number(message.timestamp.toString());
+  return Number.isSafeInteger(seconds) && seconds >= 0 ? seconds : null;
+}
+
 export default {
   name: "GtfsTableView",
-  props: ["feed"],
+  props: {
+    feed: Object,
+    formatLongAges: { type: Boolean, default: true },
+  },
+  data() {
+    return { nowSeconds: Math.floor(Date.now() / 1000), ageTimer: null };
+  },
+  mounted() {
+    this.ageTimer = setInterval(() => {
+      this.nowSeconds = Math.floor(Date.now() / 1000);
+    }, 5000);
+  },
+  beforeUnmount() {
+    clearInterval(this.ageTimer);
+  },
   computed: {
+    feedTimestampSeconds() {
+      return timestampSeconds(this.feed?.header);
+    },
     tripEntities() {
       return (this.feed?.entity || []).filter(entity => entity.tripUpdate);
     },
@@ -138,6 +166,17 @@ export default {
     }
   },
   methods: {
+    formatAge(message) {
+      const timestamp = timestampSeconds(message) ?? this.feedTimestampSeconds;
+      if (timestamp === null) return '-';
+      const age = Math.max(0, this.nowSeconds - timestamp);
+      // if (this.formatLongAges && age > 60) {
+      //   const minutes = Math.floor(age / 60);
+      //   const seconds = String(age % 60).padStart(2, '0');
+      //   return minutes + ':' + seconds;
+      // }
+      return age + ' s';
+    },
     optionalValue(message, field) {
       return message && Object.prototype.hasOwnProperty.call(message, field) ? message[field] : '-';
     },
